@@ -23,4 +23,72 @@ document.addEventListener("DOMContentLoaded", () => {
       window.processList();
     }
   }
+
+  const fabButton = document.getElementById("fabButton");
+  const fabMenuPanel = document.getElementById("fabMenuPanel");
+  const fileLoader = document.getElementById("fileLoader");
+  const menuAddMain = document.getElementById("menuAddMain");
+  const menuSaveFile = document.getElementById("menuSaveFile");
+  const menuLoadFile = document.getElementById("menuLoadFile");
+  const menuClearAll = document.getElementById("menuClearAll");
+
+  if (fabButton && fabMenuPanel) {
+    fabButton.addEventListener("click", () => {
+      fabMenuPanel.classList.toggle("show");
+    });
+  }
+
+  if (menuAddMain) {
+    menuAddMain.addEventListener("click", () => {
+      window.addTask();
+      fabMenuPanel && fabMenuPanel.classList.remove("show");
+    });
+  }
+
+  if (menuSaveFile && window.storageManager && window.storageManager.saveToFile) {
+    menuSaveFile.addEventListener("click", window.storageManager.saveToFile);
+  }
+
+  if (menuLoadFile && fileLoader) {
+    menuLoadFile.addEventListener("click", () => {
+      fileLoader.value = "";
+      fileLoader.click();
+    });
+    if (window.storageManager && window.storageManager.loadFile) {
+      fileLoader.addEventListener("change", window.storageManager.loadFile);
+    }
+  }
+
+  if (menuClearAll) {
+    menuClearAll.addEventListener("click", () => {
+      const confirmModal = document.getElementById("confirmClearModal");
+      if (!confirmModal) return;
+      confirmModal.classList.remove("hidden");
+      confirmModal.classList.add("show");
+      fabMenuPanel && fabMenuPanel.classList.remove("show");
+    });
+  }
+
+  window.confirmClear = () => {
+    localStorage.removeItem("savedText");
+    const taskList = document.getElementById("taskList");
+    taskList.innerHTML = "";
+    if (window.showToast) window.showToast("🗑️ List cleared");
+    window.closeConfirmModal();
+  };
+
+  window.closeConfirmModal = () => {
+    const modal = document.getElementById("confirmClearModal");
+    modal.classList.remove("show");
+    modal.classList.add("hidden");
+  };
+
+  document.addEventListener("keydown", event => {
+    if(event.key === "Escape") {
+      const confirmModal = document.getElementById("confirmClearModal");
+      if (confirmModal && confirmModal.classList.contains("show")) {
+        window.closeConfirmModal();
+      }
+    }
+  });
 });

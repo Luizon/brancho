@@ -124,3 +124,58 @@ function processList() {
 window.exportList = exportList;
 window.saveToLocalStorage = saveToLocalStorage;
 window.processList = processList; 
+
+// Toast helper
+function showToast(message, type) {
+  const container = document.getElementById("toastContainer");
+  if (!container) return;
+  const el = document.createElement("div");
+  el.className = `toast${type === 'error' ? ' error' : type === 'success' ? ' success' : ''}`;
+  el.textContent = message;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.classList.add('removing');
+    setTimeout(() => el.remove(), 250);
+  }, 2000);
+}
+
+// File save/load API
+function saveToFile() {
+  const text = localStorage.getItem("savedText") || exportList();
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const filename = `todo-list_${new Date().toISOString().replaceAll(/[T:-]/g, ' ').split('.')[0]}.txt`;
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  if (window.showToast) window.showToast(`📄 List saved to ${filename}`); else showToast(`📄 List saved to ${filename}`);
+  const fabMenuPanel = document.getElementById("fabMenuPanel");
+  if (fabMenuPanel) fabMenuPanel.classList.remove("show");
+}
+
+async function loadFile(event) {
+  const input = event && event.target ? event.target : document.getElementById("fileLoader");
+  const file = input && input.files && input.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const hasValidTask = text.split('\n').some(line => line.trim().match(/^\s*\[[ x]\]\s+\S+/));
+    if (!hasValidTask) throw new Error("Invalid file format. Expected tasks with '[ ]' or '[x]' markers.");
+    localStorage.setItem("savedText", text);
+    window.processList();
+    if (window.showToast) window.showToast(`📄 Loaded ${file.name} successfully`); else showToast(`📄 Loaded ${file.name} successfully`);
+  } catch (error) {
+    if (window.showToast) window.showToast(`❌ ${error.message || 'Failed to load file'}`, 'error'); else showToast(`❌ ${error.message || 'Failed to load file'}`, 'error');
+  }
+  const fabMenuPanel = document.getElementById("fabMenuPanel");
+  if (fabMenuPanel) fabMenuPanel.classList.remove("show");
+}
+
+window.storageManager = {
+  saveToFile,
+  loadFile,
+};
