@@ -1,4 +1,6 @@
-function exportList() { // Export function ready for future file download implementation
+let saveDebounceTimer = null;
+
+function generateTasksString() {
   const output = [];
   
   function traverseList(element, level = 0) {
@@ -22,9 +24,13 @@ function exportList() { // Export function ready for future file download implem
   }
 
   traverseList(document.getElementById("taskList"));
-  
-  // Store directly in LocalStorage instead of textarea
-  localStorage.setItem("savedText", output.join("\n"));
+  return output.join("\n");
+}
+
+function exportList() { // Backward-compatible export; also returns string
+  const text = generateTasksString();
+  localStorage.setItem("savedText", text);
+  return text;
 }
 
 function saveToLocalStorage() {

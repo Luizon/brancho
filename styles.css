@@ -338,6 +338,48 @@ li {
   animation: modalSlideIn 0.3s ease-out forwards;
 }
 
+#conflictModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 2000; /* above description modal */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+#conflictModal.show {
+  display: flex;
+}
+
+#conflictModal .modal-content {
+  max-width: 640px;
+  width: 92vw;
+}
+
+.conflict-title {
+  margin: 0;
+  color: #ff4d4f;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+.conflict-text {
+  margin: 0;
+  color: #ffd3d3;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.conflict-text strong {
+  color: #ff4d4f;
+}
+
 #descriptionText {
   background: rgba(0, 0, 0, 0.3);
   border: 2px solid rgba(255, 255, 255, 0.1);

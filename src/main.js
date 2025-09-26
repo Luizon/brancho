@@ -14,8 +14,13 @@ document.addEventListener("keydown", event => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  const savedText = localStorage.getItem("savedText");
-  if (savedText) {
-    window.processList();
+  // Initialize auth and then tasks
+  if (window.initAuthAndTasks) {
+    window.initAuthAndTasks();
+  } else {
+    const savedText = localStorage.getItem("savedText");
+    if (savedText) {
+      window.processList();
+    }
   }
 });

@@ -12,6 +12,23 @@
     <div class="main-header">
       <h1 class="main-title">Simple TO-DO List</h1>
       <p class="main-subtitle">Because everyone has stuff to-do</p>
+      <div id="authBar" style="margin-top: 16px; display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap;">
+        <div id="auth-logged-out">
+          <input id="auth-name" type="text" placeholder="Name (for register)" style="padding: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white;">
+          <input id="auth-email" type="email" placeholder="Email" style="padding: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white;">
+          <input id="auth-password" type="password" placeholder="Password" style="padding: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white;">
+          <button id="auth-login-btn">Login</button>
+          <button id="auth-register-btn">Register</button>
+        </div>
+        <div id="auth-logged-in" class="hidden" style="display: inline-flex; gap: 8px; align-items: center;">
+          <span>Hi, <strong id="auth-user-name"></strong></span>
+          <button id="auth-update-name-btn">Update name</button>
+          <button id="auth-change-pass-btn">Change password</button>
+          <button id="sync-btn">Sync to Cloud</button>
+          <span id="sync-status" style="opacity: 0.7; font-size: 0.9em;">Last sync: Never</span>
+          <button id="auth-logout-btn">Logout</button>
+        </div>
+      </div>
     </div>
 
     <ul id="taskList"></ul>
@@ -30,8 +47,26 @@
     </div>
   </div>
 
+  <div id="conflictModal" class="hidden">
+    <div class="modal-content">
+      <h2 class="conflict-title">⚠️ Important action required</h2>
+      <p class="conflict-text">
+        Your local tasks and your account tasks are different. Please choose <strong>which copy to keep</strong>.
+        The other copy will be <strong>permanently overwritten</strong>. If you're unsure, you can log out now.
+      </p>
+      <div class="modal-buttons">
+        <button id="conflict-use-local" class="modal-btn modal-btn-save">Use Local Tasks</button>
+        <button id="conflict-use-remote" class="modal-btn">Use Account Tasks</button>
+        <button id="conflict-logout" class="modal-btn modal-btn-close">Log out</button>
+      </div>
+    </div>
+  </div>
+
 
   <script src="./src/utils.js"></script>
+  <script src="./src/api.js"></script>
+  <script src="./src/auth.js"></script>
+  <script src="./src/sync.js"></script>
   <script src="./src/checkboxHandling.js"></script>
   <script src="./src/dragDrop.js"></script>
   <script src="./src/storage.js"></script>
