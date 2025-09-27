@@ -3,33 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple TO-DO List</title>
+  <title>Treed TO-DO List</title>
   <link rel="stylesheet" href="./styles.css">
   <link rel="icon" href="./favicon.svg" type="image/svg">
 </head>
 <body>
-  <div class="app-container">
-    <div class="main-header">
-      <h1 class="main-title">Simple TO-DO List</h1>
-      <p class="main-subtitle">Because everyone has stuff to-do</p>
-      <div id="authBar" style="margin-top: 16px; display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap;">
-        <div id="auth-logged-out">
-          <input id="auth-name" type="text" placeholder="Name (for register)" style="padding: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white;">
-          <input id="auth-email" type="email" placeholder="Email" style="padding: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white;">
-          <input id="auth-password" type="password" placeholder="Password" style="padding: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white;">
-          <button id="auth-login-btn">Login</button>
-          <button id="auth-register-btn">Register</button>
-        </div>
-        <div id="auth-logged-in" class="hidden" style="display: inline-flex; gap: 8px; align-items: center;">
-          <span>Hi, <strong id="auth-user-name"></strong></span>
-          <button id="auth-update-name-btn">Update name</button>
-          <button id="auth-change-pass-btn">Change password</button>
-          <button id="sync-btn">Sync to Cloud</button>
-          <span id="sync-status" style="opacity: 0.7; font-size: 0.9em;">Last sync: Never</span>
-          <button id="auth-logout-btn">Logout</button>
+  <header class="appbar">
+    <div class="appbar-left">
+      <div class="brand">Brancho</div>
+      <div class="tagline">Your hierarchical task manager</div>
+    </div>
+    <div class="appbar-right">
+      <div id="appbar-logged-out">
+        <button id="open-login">Login</button>
+        <button id="open-register">Register</button>
+      </div>
+      <div id="appbar-logged-in" class="hidden">
+        <span id="greeting" class="sync-status"></span>.
+        <span id="sync-status" class="sync-status">Last sync: Never</span>
+        <button id="sync-btn">Sync to Cloud</button>
+        <div class="menu">
+          <button id="user-menu-btn" class="burger" aria-haspopup="true" aria-expanded="false">☰</button>
+          <div id="user-menu" class="dropdown hidden" role="menu">
+            <button id="autosave-toggle" role="menuitem" class="autosave-btn">Autosave</button>
+            <button id="auth-update-name-btn" role="menuitem">Update name</button>
+            <button id="auth-change-pass-btn" role="menuitem">Change password</button>
+            <button id="auth-logout-btn" role="menuitem" class="danger">Logout</button>
+          </div>
         </div>
       </div>
     </div>
+  </header>
+
+  <div class="app-container">
+    <div class="main-header"></div>
 
     <ul id="taskList"></ul>
   </div>
@@ -86,6 +93,52 @@
     </div>
   </div>
 
+  <div id="authModal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="authModalTitle">Login</h2>
+      <input id="auth-name" type="text" placeholder="Name" class="auth-input hidden">
+      <input id="auth-email" type="email" placeholder="Email" class="auth-input">
+      <input id="auth-password" type="password" placeholder="Password" class="auth-input">
+      <div class="modal-buttons">
+        <button id="authModalPrimary" class="modal-btn modal-btn-save">Continue</button>
+        <button id="authModalClose" class="modal-btn modal-btn-close">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="updateNameModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Update name</h2>
+      <input id="updateNameInput" type="text" placeholder="New name" class="auth-input">
+      <div class="modal-buttons">
+        <button id="updateNameConfirm" class="modal-btn modal-btn-save">Update</button>
+        <button id="updateNameCancel" class="modal-btn modal-btn-close">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="changePassModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Change password</h2>
+      <input id="changePassCurrent" type="password" placeholder="Current password" class="auth-input">
+      <input id="changePassNew" type="password" placeholder="New password" class="auth-input">
+      <div class="modal-buttons">
+        <button id="changePassConfirm" class="modal-btn modal-btn-save">Change</button>
+        <button id="changePassCancel" class="modal-btn modal-btn-close">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="infoModal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="infoModalTitle">Info</h2>
+      <div id="infoModalBody" style="opacity:0.9"></div>
+      <div class="modal-buttons">
+        <button id="infoModalClose" class="modal-btn modal-btn-save">OK</button>
+      </div>
+    </div>
+  </div>
+
 
   <script src="./src/utils.js"></script>
   <script src="./src/api.js"></script>
@@ -97,5 +150,8 @@
   <script src="./src/modal.js"></script>
   <script src="./src/taskManager.js"></script>
   <script src="./src/main.js"></script>
+  <footer class="footer">
+    <div>© <span id="currentYear"></span> Brancho</div>
+  </footer>
 </body>
 </html>

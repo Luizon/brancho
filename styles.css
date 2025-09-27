@@ -3,9 +3,66 @@ body {
   background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f0f0f 100%);
   color: white;
   margin: 0;
-  padding: 20px;
+  padding: 0;
   min-height: 100vh;
   position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+html, body { height: 100%; }
+
+/* Appbar */
+.appbar {
+  position: sticky;
+  top: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 20px;
+  background-color: #0e3a62;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.appbar-left { display: flex; flex-direction: column; }
+.brand { font-size: 26px; font-weight: 800; color: #9fd5ff; text-shadow: 0 0 30px rgba(74, 158, 255, 0.3); }
+.tagline { font-size: 12px; opacity: 0.75; }
+
+.appbar-right { display: flex; align-items: center; gap: 10px; }
+.appbar-right .burger { width: 36px; height: 36px; border-radius: 8px; }
+.appbar-right .menu { position: relative; display: inline; }
+.dropdown { position: absolute; right: 0; top: 42px; display: flex; flex-direction: column; gap: 6px; padding: 8px; background: linear-gradient(145deg, #2a2a2a, #1a1a1a); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.4); min-width: 180px; }
+.dropdown.hidden { display: none; }
+.dropdown button { text-align: left; }
+.dropdown .danger { color: #ff6b7a; }
+.sync-status { opacity: 0.8; font-size: 0.9em; }
+
+/* Autosave toggle */
+.autosave-btn { border: 1px solid rgba(255,255,255,0.2); }
+.autosave-on { background: linear-gradient(145deg, #26c281, #00b894); border-color: rgba(38,194,129,0.4); }
+.autosave-off { background: linear-gradient(145deg, #3a3a3a, #2a2a2a); color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.15); }
+
+/* Auth modal tweaks */
+.auth-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: white;
+  font-size: 14px;
+  outline: none;
+}
+
+/* Footer */
+.footer {
+  margin-top: auto;
+  padding: 20px;
+  text-align: center;
+  color: rgba(255,255,255,0.7);
+  border-top: 1px solid rgba(255,255,255,0.08);
 }
 
 .main-header {
@@ -501,9 +558,9 @@ li {
 
 /* Modern container for the entire app */
 .app-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  min-width: 600px;
   padding: 0 20px;
+  flex: 1 0 auto;
 }
 
 #taskList {
