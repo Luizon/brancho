@@ -20,7 +20,7 @@ This project is a lightweight web application for managing task lists (checklist
 
 ## Usage
 
-Visit the online application at [https://luizon.dev/treed-todo-list](https://luizon.dev/treed-todo-list).
+Visit the online application at [https://luizon.dev/brancho/](https://luizon.dev/brancho/).
 
 - Tasks can be *expanded* or *collapsed* using the **▼ / ▶ toggle button**, allowing you to focus on relevant items.
 - Use the **🗑 button** to remove the task, including all their subtasks.
