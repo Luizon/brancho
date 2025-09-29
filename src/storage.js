@@ -29,6 +29,7 @@ function generateTasksString() {
 
 function exportList() { // Backward-compatible export; also returns string
   const text = generateTasksString();
+  localStorage.setItem("hasSaved", "true");
   localStorage.setItem("savedText", text);
   return text;
 }
@@ -44,8 +45,10 @@ function processList() {
   taskList.style.animation = "fadeIn 0.5s ease-out forwards";
 
   // Get text from LocalStorage instead of textarea
-  const text = localStorage.getItem("savedText") || `[ ] Example main task
-	[ ] task 2 [Description: IMPORTANT:\ncheck task 5]
+  const text = localStorage.getItem("hasSaved") === "true"
+  ? localStorage.getItem("savedText")
+  : `[ ] Example main task
+	[ ] task 2 [Description: IMPORTANT:\\ncheck task 5]
 		[ ] task 4
 		[ ] task 5
 	[x] task 3`;
