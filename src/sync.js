@@ -23,6 +23,9 @@ async function syncToCloud() {
     updateSyncStatus("Login to sync");
     return false;
   }
+  const btn = document.getElementById("sync-btn");
+  const prevText = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = "Syncing..."; }
   try {
     const text = localStorage.getItem("savedText") || "";
     await window.api.updateMyTasks(text);
@@ -32,7 +35,10 @@ async function syncToCloud() {
     return true;
   } catch (err) {
     updateSyncStatus("Sync failed");
+    if (window.showInfo) window.showInfo('Sync failed', err.message || 'Unable to sync your tasks to the cloud.');
     return false;
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = prevText || 'Sync to Cloud'; }
   }
 }
 
