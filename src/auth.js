@@ -75,6 +75,32 @@ async function fetchAndLoadTasksIfNeeded() {
   }
 }
 
+function closeAuthModal() {
+  const modal = document.getElementById("authModal");
+  const primaryBtn = document.getElementById("authModalPrimary");
+  const closeBtn = document.getElementById("authModalClose");
+  if (!modal) return;
+  modal.classList.remove("show");
+  modal.classList.add("hidden");
+  const prev = (modal.dataset && modal.dataset.prevOverflow) || "";
+  document.body.style.overflow = prev;
+  if (primaryBtn) primaryBtn.onclick = null;
+  if (closeBtn) closeBtn.onclick = null;
+  // Reset controls to default state for next open
+  if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
+  if (closeBtn) closeBtn.disabled = false;
+  const nameInput = document.getElementById("auth-name");
+  const emailInput = document.getElementById("auth-email");
+  const passInput = document.getElementById("auth-password");
+  if (nameInput) nameInput.disabled = false;
+  if (emailInput) emailInput.disabled = false;
+  if (passInput) passInput.disabled = false;
+  // Clear values so reopening does not preserve previous input
+  if (nameInput) nameInput.value = "";
+  if (emailInput) emailInput.value = "";
+  if (passInput) passInput.value = "";
+}
+
 async function handleLogin(e) {
   e && e.preventDefault && e.preventDefault();
   const email = document.getElementById("auth-email").value.trim();
@@ -115,8 +141,8 @@ async function handleLogin(e) {
     if (passInput) passInput.disabled = false;
     return;
   }
-  // success -> close modal
-  if (modal) { modal.classList.remove("show"); modal.classList.add("hidden"); }
+  // success -> close modal after tasks loaded
+  closeAuthModal();
 }
 
 async function handleRegister(e) {
@@ -134,14 +160,14 @@ async function handleRegister(e) {
   const emailInput = document.getElementById("auth-email");
   const passInput = document.getElementById("auth-password");
   const modal = document.getElementById("authModal");
-  if (primaryBtn) { primaryBtn.disabled = true; primaryBtn.textContent = "Registering..."; }
+  if (primaryBtn) { primaryBtn.disabled = true; primaryBtn.textContent = "Loading..."; }
   if (closeBtn) closeBtn.disabled = true;
   if (nameInput) nameInput.disabled = true;
   if (emailInput) emailInput.disabled = true;
   if (passInput) passInput.disabled = true;
   try {
     await window.api.registerUser(name, email, password);
-    if (primaryBtn) primaryBtn.textContent = "Logging in...";
+    if (primaryBtn) primaryBtn.textContent = "Loading...";
     await window.api.loginUser(email, password);
     await ensureAuthState();
     await fetchAndLoadTasksIfNeeded();
@@ -157,7 +183,7 @@ async function handleRegister(e) {
     if (passInput) passInput.disabled = false;
     return;
   }
-  if (modal) { modal.classList.remove("show"); modal.classList.add("hidden"); }
+  closeAuthModal();
 }
 
 function handleLogout() {
@@ -220,7 +246,7 @@ function setupAuthBar() {
   if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
   if (updateNameBtn) updateNameBtn.addEventListener("click", openUpdateNameModal);
   if (changePassBtn) changePassBtn.addEventListener("click", openChangePassModal);
-  if (deleteAccountBtn) deleteAccountBtn.addEventListener("click", handleDeleteAccountFlow);
+  if (deleteAccountBtn) deleteAccountBtn.addEventListener("click", openDeleteAccountModal);
   if (userMenuBtn && userMenu) {
     let pinned = false;
     let closeTimer = null;
@@ -340,12 +366,35 @@ function openAuthModal(mode) {
   if (!modal) return;
   title.textContent = mode === "register" ? "Register" : "Login";
   nameInput.classList.toggle("hidden", mode !== "register");
+  // Ensure default interactive state when opening
+  if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
+  if (closeBtn) closeBtn.disabled = false;
+  if (nameInput) nameInput.disabled = false;
+  if (emailInput) emailInput.disabled = false;
+  if (passInput) passInput.disabled = false;
   modal.classList.remove("hidden");
   modal.classList.add("show");
   const previousOverflow = document.body.style.overflow;
   document.body.style.overflow = "hidden";
-  const cleanup = () => { modal.classList.remove("show"); modal.classList.add("hidden"); document.body.style.overflow = previousOverflow || ""; primaryBtn.onclick = null; closeBtn.onclick = null; };
-  primaryBtn.onclick = () => { mode === "register" ? handleRegister() : handleLogin(); cleanup(); };
+  if (modal && modal.dataset) { modal.dataset.prevOverflow = previousOverflow || ""; }
+  const cleanup = () => {
+    modal.classList.remove("show");
+    modal.classList.add("hidden");
+    document.body.style.overflow = previousOverflow || "";
+    primaryBtn.onclick = null; closeBtn.onclick = null;
+    // Reset controls to default state when closing via Cancel
+    if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
+    if (closeBtn) closeBtn.disabled = false;
+    if (nameInput) nameInput.disabled = false;
+    if (emailInput) emailInput.disabled = false;
+    if (passInput) passInput.disabled = false;
+    // Clear values so reopening starts fresh
+    if (nameInput) nameInput.value = "";
+    if (emailInput) emailInput.value = "";
+    if (passInput) passInput.value = "";
+  };
+  // Do NOT auto-close on primary click; keep modal open and show loading state until flow completes
+  primaryBtn.onclick = () => { mode === "register" ? handleRegister() : handleLogin(); };
   closeBtn.onclick = cleanup;
 }
 
@@ -408,6 +457,55 @@ function openChangePassModal() {
   cancel.onclick = cleanup;
 }
 
+function openDeleteAccountModal() {
+  const modal = document.getElementById('promptModal');
+  const titleEl = document.getElementById('promptTitle');
+  const bodyEl = document.getElementById('promptBody');
+  const inputsEl = document.getElementById('promptInputs');
+  const confirmBtn = document.getElementById('promptConfirm');
+  const cancelBtn = document.getElementById('promptCancel');
+  if (!modal || !titleEl || !bodyEl || !inputsEl || !confirmBtn || !cancelBtn) return;
+  titleEl.textContent = '⚠️ Delete your account';
+  bodyEl.innerHTML = 'Once deleted, your account and cloud data will be <strong>gone forever</strong>. Your tasks will still be available locally on this device.';
+  inputsEl.innerHTML = '';
+  const input = document.createElement('input');
+  input.type = 'password';
+  input.placeholder = 'Enter your password';
+  input.id = 'deleteAccountPassword';
+  input.className = 'auth-input';
+  inputsEl.appendChild(input);
+  confirmBtn.textContent = 'Delete account';
+  confirmBtn.classList.add('modal-btn-danger');
+  confirmBtn.classList.remove('modal-btn-save');
+  cancelBtn.textContent = 'Cancel';
+  modal.classList.remove('hidden');
+  modal.classList.add('show');
+  const prev = document.body.style.overflow; document.body.style.overflow = 'hidden';
+  const cleanup = () => { modal.classList.remove('show'); modal.classList.add('hidden'); document.body.style.overflow = prev || ''; confirmBtn.onclick = null; cancelBtn.onclick = null; confirmBtn.disabled = false; cancelBtn.disabled = false; confirmBtn.textContent = 'Delete account'; };
+  cancelBtn.onclick = () => { cleanup(); };
+  confirmBtn.onclick = async () => {
+    const passwordEl = document.getElementById('deleteAccountPassword');
+    const password = passwordEl ? passwordEl.value : '';
+    if (!password) return;
+    confirmBtn.disabled = true;
+    cancelBtn.disabled = true;
+    confirmBtn.textContent = 'Deleting...';
+    try {
+      const res = await window.api.deleteMyAccount(password);
+      if (window.showInfo) window.showInfo('Account deleted', (res && res.message) || 'Your account has been deleted successfully.');
+      localStorage.removeItem('authToken');
+      currentUser = null;
+      showLoggedOutUI();
+      cleanup();
+    } catch (e) {
+      if (window.showInfo) window.showInfo('Error', e.message || 'Failed to delete account');
+      confirmBtn.disabled = false;
+      cancelBtn.disabled = false;
+      confirmBtn.textContent = 'Delete account';
+    }
+  };
+}
+
 async function showPrompt({ title, body, inputs = [], confirmText = 'OK', cancelText = 'Cancel', danger = false }) {
   return new Promise((resolve) => {
     const modal = document.getElementById('promptModal');
@@ -454,7 +552,7 @@ async function showPrompt({ title, body, inputs = [], confirmText = 'OK', cancel
 
 async function handleDeleteAccountFlow() {
   const result = await showPrompt({
-    title: 'Delete your account',
+    title: '⚠️ Delete your account',
     body: 'Once deleted, your account and cloud data will be <strong>gone forever</strong>. Your tasks will still be available locally on this device.',
     inputs: [{ id: 'password', type: 'password', placeholder: 'Enter your password' }],
     confirmText: 'Delete account',
