@@ -73,6 +73,13 @@ async function changeCurrentUserPassword(currentPassword, newPassword) {
   });
 }
 
+async function deleteMyAccount(password) {
+  return apiRequest("/users/me", {
+    method: "DELETE",
+    body: { password },
+  });
+}
+
 async function getMyTasks() {
   return apiRequest("/tasks/me", { method: "GET" });
 }
@@ -89,6 +96,7 @@ window.api = {
   getCurrentUser,
   updateCurrentUserName,
   changeCurrentUserPassword,
+  deleteMyAccount,
   getMyTasks,
   updateMyTasks,
 };

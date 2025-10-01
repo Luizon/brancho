@@ -42,6 +42,7 @@
             <button id="autosave-toggle" role="menuitem" class="autosave-btn">Autosave</button>
             <button id="auth-update-name-btn" role="menuitem">Update name</button>
             <button id="auth-change-pass-btn" role="menuitem">Change password</button>
+            <button id="auth-delete-account-btn" role="menuitem" class="danger">Delete account</button>
             <button id="auth-logout-btn" role="menuitem" class="danger">Logout</button>
           </div>
         </div>
@@ -139,6 +140,18 @@
       <div class="modal-buttons">
         <button id="changePassConfirm" class="modal-btn modal-btn-save">Change</button>
         <button id="changePassCancel" class="modal-btn modal-btn-close">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="promptModal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="promptTitle">Confirm</h2>
+      <div id="promptBody" style="opacity:0.9"></div>
+      <div id="promptInputs" style="display:flex; flex-direction:column; gap:10px; margin-top:6px;"></div>
+      <div class="modal-buttons">
+        <button id="promptConfirm" class="modal-btn modal-btn-save">OK</button>
+        <button id="promptCancel" class="modal-btn modal-btn-close">Cancel</button>
       </div>
     </div>
   </div>

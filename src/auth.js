@@ -75,14 +75,50 @@ async function fetchAndLoadTasksIfNeeded() {
   }
 }
 
+function closeAuthModal() {
+  const modal = document.getElementById("authModal");
+  const primaryBtn = document.getElementById("authModalPrimary");
+  const closeBtn = document.getElementById("authModalClose");
+  if (!modal) return;
+  modal.classList.remove("show");
+  modal.classList.add("hidden");
+  const prev = (modal.dataset && modal.dataset.prevOverflow) || "";
+  document.body.style.overflow = prev;
+  if (primaryBtn) primaryBtn.onclick = null;
+  if (closeBtn) closeBtn.onclick = null;
+  // Reset controls to default state for next open
+  if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
+  if (closeBtn) closeBtn.disabled = false;
+  const nameInput = document.getElementById("auth-name");
+  const emailInput = document.getElementById("auth-email");
+  const passInput = document.getElementById("auth-password");
+  if (nameInput) nameInput.disabled = false;
+  if (emailInput) emailInput.disabled = false;
+  if (passInput) passInput.disabled = false;
+  // Clear values so reopening does not preserve previous input
+  if (nameInput) nameInput.value = "";
+  if (emailInput) emailInput.value = "";
+  if (passInput) passInput.value = "";
+}
+
 async function handleLogin(e) {
   e && e.preventDefault && e.preventDefault();
   const email = document.getElementById("auth-email").value.trim();
   const password = document.getElementById("auth-password").value.trim();
   if (!email || !password) {
-    alert("Please enter email and password");
+    if (window.showInfo) window.showInfo('Missing information', 'Please enter email and password.');
     return;
   }
+  const primaryBtn = document.getElementById("authModalPrimary");
+  const closeBtn = document.getElementById("authModalClose");
+  const emailInput = document.getElementById("auth-email");
+  const passInput = document.getElementById("auth-password");
+  const modal = document.getElementById("authModal");
+  // lock modal
+  if (primaryBtn) { primaryBtn.disabled = true; primaryBtn.textContent = "Logging in..."; }
+  if (closeBtn) closeBtn.disabled = true;
+  if (emailInput) emailInput.disabled = true;
+  if (passInput) passInput.disabled = true;
   try {
     await window.api.loginUser(email, password);
     const me = await ensureAuthState();
@@ -97,8 +133,16 @@ async function handleLogin(e) {
       document.getElementById("auth-password").value = "";
     }
   } catch (err) {
-    alert(err.message || "Login failed");
+    if (window.showInfo) window.showInfo('Login failed', err.message || 'Unable to login.');
+    // keep modal open on error
+    if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
+    if (closeBtn) closeBtn.disabled = false;
+    if (emailInput) emailInput.disabled = false;
+    if (passInput) passInput.disabled = false;
+    return;
   }
+  // success -> close modal after tasks loaded
+  closeAuthModal();
 }
 
 async function handleRegister(e) {
@@ -107,11 +151,23 @@ async function handleRegister(e) {
   const email = document.getElementById("auth-email").value.trim();
   const password = document.getElementById("auth-password").value.trim();
   if (!name || !email || !password) {
-    alert("Please fill name, email and password");
+    if (window.showInfo) window.showInfo('Missing information', 'Please fill name, email and password.');
     return;
   }
+  const primaryBtn = document.getElementById("authModalPrimary");
+  const closeBtn = document.getElementById("authModalClose");
+  const nameInput = document.getElementById("auth-name");
+  const emailInput = document.getElementById("auth-email");
+  const passInput = document.getElementById("auth-password");
+  const modal = document.getElementById("authModal");
+  if (primaryBtn) { primaryBtn.disabled = true; primaryBtn.textContent = "Loading..."; }
+  if (closeBtn) closeBtn.disabled = true;
+  if (nameInput) nameInput.disabled = true;
+  if (emailInput) emailInput.disabled = true;
+  if (passInput) passInput.disabled = true;
   try {
     await window.api.registerUser(name, email, password);
+    if (primaryBtn) primaryBtn.textContent = "Loading...";
     await window.api.loginUser(email, password);
     await ensureAuthState();
     await fetchAndLoadTasksIfNeeded();
@@ -119,8 +175,15 @@ async function handleRegister(e) {
     document.getElementById("auth-email").value = "";
     document.getElementById("auth-password").value = "";
   } catch (err) {
-    alert(err.message || "Registration failed");
+    if (window.showInfo) window.showInfo('Registration failed', err.message || 'Unable to register.');
+    if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
+    if (closeBtn) closeBtn.disabled = false;
+    if (nameInput) nameInput.disabled = false;
+    if (emailInput) emailInput.disabled = false;
+    if (passInput) passInput.disabled = false;
+    return;
   }
+  closeAuthModal();
 }
 
 function handleLogout() {
@@ -130,27 +193,41 @@ function handleLogout() {
 }
 
 async function handleUpdateName() {
-  const newName = prompt("Enter new name:");
-  if (!newName) return;
+  const result = await showPrompt({
+    title: 'Update name',
+    body: '',
+    inputs: [{ id: 'name', type: 'text', placeholder: 'New name' }],
+    confirmText: 'Update',
+    cancelText: 'Cancel',
+  });
+  if (!result || !result.name || !result.name.trim()) return;
   try {
-    const updated = await window.api.updateCurrentUserName(newName.trim());
+    const updated = await window.api.updateCurrentUserName(result.name.trim());
     currentUser = updated;
     showLoggedInUI(updated);
+    if (window.showInfo) window.showInfo('Name updated', 'Your display name has been updated.');
   } catch (err) {
-    alert(err.message || "Failed to update name");
+    if (window.showInfo) window.showInfo('Error', err.message || 'Failed to update name');
   }
 }
 
 async function handleChangePassword() {
-  const currentPassword = prompt("Enter current password:");
-  if (!currentPassword) return;
-  const newPassword = prompt("Enter new password:");
-  if (!newPassword) return;
+  const result = await showPrompt({
+    title: 'Change password',
+    body: '',
+    inputs: [
+      { id: 'currentPassword', type: 'password', placeholder: 'Current password' },
+      { id: 'newPassword', type: 'password', placeholder: 'New password' },
+    ],
+    confirmText: 'Change',
+    cancelText: 'Cancel',
+  });
+  if (!result || !result.currentPassword || !result.newPassword) return;
   try {
-    await window.api.changeCurrentUserPassword(currentPassword, newPassword);
-    alert("Password has been updated");
+    await window.api.changeCurrentUserPassword(result.currentPassword, result.newPassword);
+    if (window.showInfo) window.showInfo('Password updated', 'Your password has been successfully changed.');
   } catch (err) {
-    alert(err.message || "Failed to change password");
+    if (window.showInfo) window.showInfo('Error', err.message || 'Failed to change password');
   }
 }
 
@@ -160,6 +237,7 @@ function setupAuthBar() {
   const logoutBtn = document.getElementById("auth-logout-btn");
   const updateNameBtn = document.getElementById("auth-update-name-btn");
   const changePassBtn = document.getElementById("auth-change-pass-btn");
+  const deleteAccountBtn = document.getElementById("auth-delete-account-btn");
   const userMenuBtn = document.getElementById("user-menu-btn");
   const userMenu = document.getElementById("user-menu");
 
@@ -168,6 +246,7 @@ function setupAuthBar() {
   if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
   if (updateNameBtn) updateNameBtn.addEventListener("click", openUpdateNameModal);
   if (changePassBtn) changePassBtn.addEventListener("click", openChangePassModal);
+  if (deleteAccountBtn) deleteAccountBtn.addEventListener("click", openDeleteAccountModal);
   if (userMenuBtn && userMenu) {
     let pinned = false;
     let closeTimer = null;
@@ -287,12 +366,35 @@ function openAuthModal(mode) {
   if (!modal) return;
   title.textContent = mode === "register" ? "Register" : "Login";
   nameInput.classList.toggle("hidden", mode !== "register");
+  // Ensure default interactive state when opening
+  if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
+  if (closeBtn) closeBtn.disabled = false;
+  if (nameInput) nameInput.disabled = false;
+  if (emailInput) emailInput.disabled = false;
+  if (passInput) passInput.disabled = false;
   modal.classList.remove("hidden");
   modal.classList.add("show");
   const previousOverflow = document.body.style.overflow;
   document.body.style.overflow = "hidden";
-  const cleanup = () => { modal.classList.remove("show"); modal.classList.add("hidden"); document.body.style.overflow = previousOverflow || ""; primaryBtn.onclick = null; closeBtn.onclick = null; };
-  primaryBtn.onclick = () => { mode === "register" ? handleRegister() : handleLogin(); cleanup(); };
+  if (modal && modal.dataset) { modal.dataset.prevOverflow = previousOverflow || ""; }
+  const cleanup = () => {
+    modal.classList.remove("show");
+    modal.classList.add("hidden");
+    document.body.style.overflow = previousOverflow || "";
+    primaryBtn.onclick = null; closeBtn.onclick = null;
+    // Reset controls to default state when closing via Cancel
+    if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
+    if (closeBtn) closeBtn.disabled = false;
+    if (nameInput) nameInput.disabled = false;
+    if (emailInput) emailInput.disabled = false;
+    if (passInput) passInput.disabled = false;
+    // Clear values so reopening starts fresh
+    if (nameInput) nameInput.value = "";
+    if (emailInput) emailInput.value = "";
+    if (passInput) passInput.value = "";
+  };
+  // Do NOT auto-close on primary click; keep modal open and show loading state until flow completes
+  primaryBtn.onclick = () => { mode === "register" ? handleRegister() : handleLogin(); };
   closeBtn.onclick = cleanup;
 }
 
@@ -353,6 +455,120 @@ function openChangePassModal() {
     }
   };
   cancel.onclick = cleanup;
+}
+
+function openDeleteAccountModal() {
+  const modal = document.getElementById('promptModal');
+  const titleEl = document.getElementById('promptTitle');
+  const bodyEl = document.getElementById('promptBody');
+  const inputsEl = document.getElementById('promptInputs');
+  const confirmBtn = document.getElementById('promptConfirm');
+  const cancelBtn = document.getElementById('promptCancel');
+  if (!modal || !titleEl || !bodyEl || !inputsEl || !confirmBtn || !cancelBtn) return;
+  titleEl.textContent = '⚠️ Delete your account';
+  bodyEl.innerHTML = 'Once deleted, your account and cloud data will be <strong>gone forever</strong>. Your tasks will still be available locally on this device.';
+  inputsEl.innerHTML = '';
+  const input = document.createElement('input');
+  input.type = 'password';
+  input.placeholder = 'Enter your password';
+  input.id = 'deleteAccountPassword';
+  input.className = 'auth-input';
+  inputsEl.appendChild(input);
+  confirmBtn.textContent = 'Delete account';
+  confirmBtn.classList.add('modal-btn-danger');
+  confirmBtn.classList.remove('modal-btn-save');
+  cancelBtn.textContent = 'Cancel';
+  modal.classList.remove('hidden');
+  modal.classList.add('show');
+  const prev = document.body.style.overflow; document.body.style.overflow = 'hidden';
+  const cleanup = () => { modal.classList.remove('show'); modal.classList.add('hidden'); document.body.style.overflow = prev || ''; confirmBtn.onclick = null; cancelBtn.onclick = null; confirmBtn.disabled = false; cancelBtn.disabled = false; confirmBtn.textContent = 'Delete account'; };
+  cancelBtn.onclick = () => { cleanup(); };
+  confirmBtn.onclick = async () => {
+    const passwordEl = document.getElementById('deleteAccountPassword');
+    const password = passwordEl ? passwordEl.value : '';
+    if (!password) return;
+    confirmBtn.disabled = true;
+    cancelBtn.disabled = true;
+    confirmBtn.textContent = 'Deleting...';
+    try {
+      const res = await window.api.deleteMyAccount(password);
+      if (window.showInfo) window.showInfo('Account deleted', (res && res.message) || 'Your account has been deleted successfully.');
+      localStorage.removeItem('authToken');
+      currentUser = null;
+      showLoggedOutUI();
+      cleanup();
+    } catch (e) {
+      if (window.showInfo) window.showInfo('Error', e.message || 'Failed to delete account');
+      confirmBtn.disabled = false;
+      cancelBtn.disabled = false;
+      confirmBtn.textContent = 'Delete account';
+    }
+  };
+}
+
+async function showPrompt({ title, body, inputs = [], confirmText = 'OK', cancelText = 'Cancel', danger = false }) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('promptModal');
+    const titleEl = document.getElementById('promptTitle');
+    const bodyEl = document.getElementById('promptBody');
+    const inputsEl = document.getElementById('promptInputs');
+    const confirmBtn = document.getElementById('promptConfirm');
+    const cancelBtn = document.getElementById('promptCancel');
+    if (!modal || !titleEl || !bodyEl || !inputsEl || !confirmBtn || !cancelBtn) {
+      resolve(null);
+      return;
+    }
+    titleEl.textContent = title || 'Confirm';
+    bodyEl.innerHTML = body || '';
+    inputsEl.innerHTML = '';
+    inputs.forEach(cfg => {
+      const input = document.createElement('input');
+      input.type = cfg.type || 'text';
+      input.placeholder = cfg.placeholder || '';
+      if (cfg.id) input.id = cfg.id;
+      input.className = 'auth-input';
+      inputsEl.appendChild(input);
+    });
+    confirmBtn.textContent = confirmText || 'OK';
+    confirmBtn.classList.toggle('modal-btn-danger', !!danger);
+    confirmBtn.classList.toggle('modal-btn-save', !danger);
+    cancelBtn.textContent = cancelText || 'Cancel';
+    modal.classList.remove('hidden');
+    modal.classList.add('show');
+    const prev = document.body.style.overflow; document.body.style.overflow = 'hidden';
+    const cleanup = () => { modal.classList.remove('show'); modal.classList.add('hidden'); document.body.style.overflow = prev || ''; confirmBtn.onclick = null; cancelBtn.onclick = null; };
+    cancelBtn.onclick = () => { cleanup(); resolve(null); };
+    confirmBtn.onclick = () => {
+      const values = {};
+      inputs.forEach(cfg => {
+        const el = cfg.id ? document.getElementById(cfg.id) : null;
+        if (el) values[cfg.id] = el.value;
+      });
+      cleanup();
+      resolve(values);
+    };
+  });
+}
+
+async function handleDeleteAccountFlow() {
+  const result = await showPrompt({
+    title: '⚠️ Delete your account',
+    body: 'Once deleted, your account and cloud data will be <strong>gone forever</strong>. Your tasks will still be available locally on this device.',
+    inputs: [{ id: 'password', type: 'password', placeholder: 'Enter your password' }],
+    confirmText: 'Delete account',
+    cancelText: 'Cancel',
+    danger: true,
+  });
+  if (!result || !result.password) return;
+  try {
+    const res = await window.api.deleteMyAccount(result.password);
+    if (window.showInfo) window.showInfo('Account deleted', (res && res.message) || 'Your account has been deleted successfully.');
+    localStorage.removeItem('authToken');
+    currentUser = null;
+    showLoggedOutUI();
+  } catch (e) {
+    if (window.showInfo) window.showInfo('Error', e.message || 'Failed to delete account');
+  }
 }
 
 function showInfo(title, body) {
