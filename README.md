@@ -1,32 +1,50 @@
-# Simple TODO List
+# Brancho — Hierarchical TODO List
 
-This project is a lightweight web application for managing task lists (checklists) directly in the browser. It allows creating multiple task lists where each task can have nested subtasks infinitely. It's perfect for organizing activities, pending tasks, or any kind of work requiring structured tracking.
+This project is a lightweight web application for managing task lists (checklists) with infinite nesting. It supports optional accounts with cloud sync, while still working fully offline with LocalStorage.
 
 ## Main Features
 
-- **Add and remove tasks:** Easily create new tasks or delete them when they're no longer needed.
-- **Unlimited subtasks:** Each task can contain subtasks, which in turn can have their own subtasks, with no depth limit.
-- **Task descriptions:** Each task can have a detailed description, useful for providing context.
-- **Rich descriptions:** Descriptions support clickable links and images. Just add a URL or image address in the description, and the app will automatically format them as `<a>` or `<img>` elements for a more useful and interactive experience.
-- **Simple interface:** Everything is managed from a single HTML page, without needing to reload or navigate to other pages.
-- **No backend:** The application runs entirely on the frontend. It doesn't make HTTP requests, use sockets, or require external servers.
-- **Automatic saving:** Your task list is automatically saved in your browser's LocalStorage. No need for a save button.
+- **Add and remove tasks:** Easily create or delete tasks and their subtasks.
+- **Unlimited subtasks:** Nest subtasks to any depth.
+- **Task descriptions:** Add rich context to each task.
+- **Rich descriptions:** Paste links and image URLs; they render as clickable `<a>` or inline `<img>`. Supports simple lists too.
+- **Simple interface:** Single-page UI — no navigation.
+- **Automatic local saving:** Tasks are saved to your browser’s LocalStorage.
+- **Accounts and cloud sync:** Register/login to save your tasks to the cloud.
+- **Manual save + Autosave:** Click “Save to Cloud” or enable autosave (every ~10 minutes).
+- **Conflict resolution:** If local and cloud copies differ on login, choose which one to keep.
+- **Account management:** Update display name, change password, or delete your account.
+- **Import/Export:** Save your list to a `.txt` file and load it later.
 
 ## Technologies Used
 
 - HTML
 - CSS
-- JavaScript (runs entirely in the browser)
+- JavaScript (frontend)
+- REST API backend with JWT auth
+- LocalStorage for offline persistence
 
 ## Usage
 
 Visit the online application at [https://luizon.dev/brancho/](https://luizon.dev/brancho/).
 
-- Tasks can be *expanded* or *collapsed* using the **▼ / ▶ toggle button**, allowing you to focus on relevant items.
-- Use the **🗑 button** to remove the task, including all their subtasks.
-- Each task has a **📝 button** to open a modal where you can add a description.
-- Descriptions support links (e.g., `https://example.com`) and image URLs (e.g., `https://example.com/image.png`), which are rendered as clickable links and inline images.
-- You can add lists in the descriptions just like this one you're reading :)
+### Without an account
+- Start adding tasks; your data is saved locally in the browser.
+- Expand/collapse using the **▼ / ▶** toggle.
+- Use **🗑** to remove a task (and its subtasks).
+- Use **📝** to add/edit a description. Links and image URLs render automatically.
+
+### With an account (cloud sync)
+- Click **Login** or **Register** in the header.
+- After login, the app loads your cloud tasks. If your local and cloud copies differ, you’ll be asked to pick one.
+- Click **Save to Cloud** to upload your current list.
+- Toggle **Autosave** in the user menu to periodically save automatically.
+
+### Account management
+- Open the user menu (☰) and choose: **Update name**, **Change password**, or **Delete account**.
+
+### Import/Export
+- Use the floating menu (+) to **Save to File** (`.txt`) or **Load from File**.
 
 ## License
 This project is licensed under the [MIT License](LICENSE.txt).
