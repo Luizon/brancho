@@ -18,33 +18,33 @@ function updateSyncStatus(text) {
 
 async function syncToCloud() {
   if (syncBlocked) {
-    updateSyncStatus("Sync paused");
+    updateSyncStatus("Save paused");
     return false;
   }
   if (!window.api || !window.api.getAuthToken()) {
-    updateSyncStatus("Login to sync");
+    updateSyncStatus("Login to save");
     return false;
   }
   const btn = document.getElementById("sync-btn");
   const btnMobile = document.getElementById("sync-btn-mobile");
   const prevText = btn ? btn.textContent : '';
-  if (btn) { btn.disabled = true; btn.textContent = "Syncing..."; }
+  if (btn) { btn.disabled = true; btn.textContent = "Saving..."; }
   const prevTextMobile = btnMobile ? btnMobile.textContent : '';
-  if (btnMobile) { btnMobile.disabled = true; btnMobile.textContent = "Syncing..."; }
+  if (btnMobile) { btnMobile.disabled = true; btnMobile.textContent = "Saving..."; }
   try {
     const text = localStorage.getItem("savedText") || "";
     await window.api.updateMyTasks(text);
     lastCloudSyncAt = Date.now();
     localStorage.setItem("lastCloudSyncAt", String(lastCloudSyncAt));
-    updateSyncStatus(`Last sync: ${getLastSyncLabel(lastCloudSyncAt)}`);
+    updateSyncStatus(`Last save: ${getLastSyncLabel(lastCloudSyncAt)}`);
     return true;
   } catch (err) {
     updateSyncStatus("Sync failed");
     if (window.showInfo) window.showInfo('Sync failed', err.message || 'Unable to sync your tasks to the cloud.');
     return false;
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = prevText || 'Sync to Cloud'; }
-    if (btnMobile) { btnMobile.disabled = false; btnMobile.textContent = prevTextMobile || 'Sync to Cloud'; }
+    if (btn) { btn.disabled = false; btn.textContent = prevText || 'Save to Cloud'; }
+    if (btnMobile) { btnMobile.disabled = false; btnMobile.textContent = prevTextMobile || 'Save to Cloud'; }
   }
 }
 
@@ -75,7 +75,7 @@ function setupSyncUI() {
   if (btn) btn.addEventListener("click", syncToCloud);
   const btnMobile = document.getElementById("sync-btn-mobile");
   if (btnMobile) btnMobile.addEventListener("click", syncToCloud);
-  updateSyncStatus(`Last sync: ${getLastSyncLabel(lastCloudSyncAt)}`);
+  updateSyncStatus(`Last save: ${getLastSyncLabel(lastCloudSyncAt)}`);
   // autosave toggle
   const toggle = document.getElementById("autosave-toggle");
   if (toggle) {
@@ -105,7 +105,7 @@ function blockSync() {
 
 function unblockSync() {
   syncBlocked = false;
-  updateSyncStatus(`Last sync: ${getLastSyncLabel(lastCloudSyncAt)}`);
+  updateSyncStatus(`Last save: ${getLastSyncLabel(lastCloudSyncAt)}`);
 }
 
 function isSyncBlocked() {

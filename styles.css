@@ -167,7 +167,7 @@ button:active {
 
 .btn-toggle:disabled {
     background: linear-gradient(145deg, #333, #222);
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.0);
     cursor: not-allowed;
     border-color: rgba(255, 255, 255, 0.1);
 }
@@ -340,43 +340,6 @@ ul {
     position: relative;
 }
 
-@keyframes fade-in-tree-line {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.tree-line-vertical {
-    position: absolute;
-    top: -10px;
-    left: 4px;
-    width: 2px;
-    background-color: rgba(255, 255, 255, 0.3);
-    z-index: 0;
-    pointer-events: none;
-}
-
-li {
-    position: relative;
-    padding-left: 15px;
-}
-
-.tree-line-horizontal {
-    position: absolute;
-    top: 20px;
-    left: -15px;
-    width: 30px;
-    height: 2px;
-    background-color: rgba(255, 255, 255, 0.3);
-    z-index: 0;
-    pointer-events: none;
-}
 
 #descriptionModal {
   position: fixed;
