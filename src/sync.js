@@ -12,6 +12,8 @@ function getLastSyncLabel(ts) {
 function updateSyncStatus(text) {
   const el = document.getElementById("sync-status");
   if (el) el.textContent = text;
+  const elMobile = document.getElementById("sync-status-mobile");
+  if (elMobile) elMobile.textContent = text;
 }
 
 async function syncToCloud() {
@@ -24,8 +26,11 @@ async function syncToCloud() {
     return false;
   }
   const btn = document.getElementById("sync-btn");
+  const btnMobile = document.getElementById("sync-btn-mobile");
   const prevText = btn ? btn.textContent : '';
   if (btn) { btn.disabled = true; btn.textContent = "Syncing..."; }
+  const prevTextMobile = btnMobile ? btnMobile.textContent : '';
+  if (btnMobile) { btnMobile.disabled = true; btnMobile.textContent = "Syncing..."; }
   try {
     const text = localStorage.getItem("savedText") || "";
     await window.api.updateMyTasks(text);
@@ -39,6 +44,7 @@ async function syncToCloud() {
     return false;
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = prevText || 'Sync to Cloud'; }
+    if (btnMobile) { btnMobile.disabled = false; btnMobile.textContent = prevTextMobile || 'Sync to Cloud'; }
   }
 }
 
@@ -67,6 +73,8 @@ function stopAutoSync() {
 function setupSyncUI() {
   const btn = document.getElementById("sync-btn");
   if (btn) btn.addEventListener("click", syncToCloud);
+  const btnMobile = document.getElementById("sync-btn-mobile");
+  if (btnMobile) btnMobile.addEventListener("click", syncToCloud);
   updateSyncStatus(`Last sync: ${getLastSyncLabel(lastCloudSyncAt)}`);
   // autosave toggle
   const toggle = document.getElementById("autosave-toggle");

@@ -182,3 +182,6 @@ window.storageManager = {
   saveToFile,
   loadFile,
 };
+
+// Expose toast globally for reuse in other modules
+window.showToast = showToast;
