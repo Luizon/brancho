@@ -19,7 +19,7 @@ function showLoggedInUI(user) {
   const greetEl = document.getElementById("greeting");
   if (greetEl) {
     const name = user && user.name ? user.name : "";
-    greetEl.textContent = name ? `Hi, ${name}` : "";
+    greetEl.textContent = name ? `Hi, ${name}. ` : "";
   }
 }
 
@@ -132,6 +132,9 @@ async function handleLogin(e) {
       document.getElementById("auth-email").value = "";
       document.getElementById("auth-password").value = "";
     }
+    if (window.showToast && me && me.name) {
+      window.showToast(`👋 Welcome back, ${me.name}!`, 'success');
+    }
   } catch (err) {
     if (window.showInfo) window.showInfo('Login failed', err.message || 'Unable to login.');
     // keep modal open on error
@@ -174,6 +177,10 @@ async function handleRegister(e) {
     document.getElementById("auth-name").value = "";
     document.getElementById("auth-email").value = "";
     document.getElementById("auth-password").value = "";
+    const me = currentUser;
+    if (window.showToast && me && me.name) {
+      window.showToast(`🤠 Welcome to Brancho, ${me.name}!`, 'success');
+    }
   } catch (err) {
     if (window.showInfo) window.showInfo('Registration failed', err.message || 'Unable to register.');
     if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }

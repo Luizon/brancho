@@ -33,12 +33,18 @@
         <button id="open-register">Register</button>
       </div>
       <div id="appbar-logged-in" class="hidden">
-        <span id="greeting" class="sync-status"></span>.
+        <span id="greeting" class="sync-status"></span>
         <span id="sync-status" class="sync-status">Last sync: Never</span>
         <button id="sync-btn">Sync to Cloud</button>
         <div class="menu">
           <button id="user-menu-btn" class="burger" aria-haspopup="true" aria-expanded="false">☰</button>
           <div id="user-menu" class="dropdown hidden" role="menu">
+            <div class="menu-appbar-mobile">
+              <span id="greeting-mobile" class="sync-status"></span>
+              <span id="sync-status-mobile" class="sync-status">Last sync: Never</span>
+              <button id="sync-btn-mobile">Sync to Cloud</button>
+              <hr class="menu-sep">
+            </div>
             <button id="autosave-toggle" role="menuitem" class="autosave-btn">Autosave</button>
             <button id="auth-update-name-btn" role="menuitem">Update name</button>
             <button id="auth-change-pass-btn" role="menuitem">Change password</button>

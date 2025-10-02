@@ -40,6 +40,27 @@ html, body { height: 100%; }
 .dropdown .danger { color: #ff6b7a; }
 .sync-status { opacity: 0.8; font-size: 0.9em; }
 
+/* Mobile appbar items inside menu */
+.menu-appbar-mobile { display: none; flex-direction: column; gap: 6px; padding-bottom: 6px; }
+.menu-sep { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0; }
+
+/* Responsive behavior */
+@media (max-width: 760px) {
+  .appbar { flex-wrap: wrap; gap: 8px; }
+  .appbar-left { max-width: 60%; }
+  .brand { font-size: 20px; }
+  .tagline { font-size: 10px; }
+  /* Hide desktop greeting/sync/sync-btn in navbar on small screens */
+  #greeting, #sync-status, #sync-btn { display: none; }
+  /* Show mobile equivalents in the dropdown */
+  .menu-appbar-mobile { display: flex; }
+}
+
+@media (min-width: 761px) {
+  /* Hide mobile equivalents on larger screens */
+  #greeting-mobile, #sync-status-mobile, #sync-btn-mobile, .menu-sep { display: none; }
+}
+
 /* Autosave toggle */
 .autosave-btn { border: 1px solid rgba(255,255,255,0.2); }
 .autosave-on { background: linear-gradient(145deg, #26c281, #00b894); border-color: rgba(38,194,129,0.4); }
@@ -558,7 +579,6 @@ li {
 
 /* Modern container for the entire app */
 .app-container {
-  min-width: 600px;
   padding: 0 20px;
   flex: 1 0 auto;
 }
