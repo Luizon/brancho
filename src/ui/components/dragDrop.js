@@ -81,7 +81,6 @@ function setupDragAndDrop(li) {
 
         const toggleButton = li.querySelector(".btn-toggle");
         toggleButton.disabled = false;
-        toggleButton.style.color = "#000f";
         window.maximize(sublist, li.querySelector(".task-description"));
       }
 
@@ -95,7 +94,7 @@ function setupDragAndDrop(li) {
         const hasDescription = window.lastParent.getAttribute("data-description").trim() !== "";
         const toggleButton = window.lastParent.querySelector(".btn-toggle");
         toggleButton.disabled = !hasSubtasks && !hasDescription;
-        toggleButton.style.color = toggleButton.disabled ? "#0000" : "#000f";
+        toggleButton.style.color = toggleButton.disabled ? "#FFF0" : "#FFFF";
       }
 
       window.saveToLocalStorage();

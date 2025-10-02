@@ -5,7 +5,7 @@ function addTask(text = "New task", parent = document.getElementById("taskList")
   li.style.setProperty('--level', level);
 
   li.innerHTML = `
-    <button class="btn-toggle" onclick="toggleChildren(this)" disabled style="color: #0000;">▼</button>
+    <button class="btn-toggle" onclick="toggleChildren(this)" disabled style="color: #FFF0;">▼</button>
     <button onclick="removeTask(this)">🗑</button>
     <input type="checkbox">
     <span contenteditable="true">${text}</span>
@@ -24,7 +24,7 @@ function addTask(text = "New task", parent = document.getElementById("taskList")
 
   if(level > 0) {
     parent.parentElement.querySelector(".btn-toggle").disabled = false;
-    parent.parentElement.querySelector(".btn-toggle").style.color = "#000F";
+    parent.parentElement.querySelector(".btn-toggle").style.color = "#FFFF";
     if(parent.classList.contains("hidden")) {
       window.maximize(parent, parent.parentElement.querySelector(".task-description"));
     }
@@ -83,7 +83,7 @@ function removeTask(button) {
       const hasDescription = parentTask.getAttribute("data-description").trim() !== "";
       const toggleButton = parentTask.querySelector(".btn-toggle");
       toggleButton.disabled = !hasSubtasks && !hasDescription;
-      toggleButton.style.color = toggleButton.disabled ? "#0000" : "#000f";
+      toggleButton.style.color = toggleButton.disabled ? "#FFF0" : "#FFFF";
 
       window.validateParentOnRemove(parentTask);
     }

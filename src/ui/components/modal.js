@@ -46,7 +46,7 @@ function saveDescription() {
     const toggleButton = currentTaskElement.querySelector(".btn-toggle");
     const hasSubtasks = currentTaskElement.querySelector(".subtasks").children.length > 1;
     toggleButton.disabled = !hasSubtasks && rawText === "";
-    toggleButton.style.color = toggleButton.disabled ? "#0000" : "#000f";
+    toggleButton.style.color = toggleButton.disabled ? "#FFF0" : "#FFFF";
 
     window.saveToLocalStorage();
   }

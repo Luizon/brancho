@@ -38,7 +38,7 @@ html, body { height: 100%; }
 .dropdown.hidden { display: none; }
 .dropdown button { text-align: left; }
 .dropdown .danger { color: #ff6b7a; }
-.sync-status { opacity: 0.8; font-size: 0.9em; }
+.save-status { opacity: 0.8; font-size: 0.9em; }
 
 /* Mobile appbar items inside menu */
 .menu-appbar-mobile { display: none; flex-direction: column; gap: 6px; padding-bottom: 6px; }
@@ -50,15 +50,15 @@ html, body { height: 100%; }
   .appbar-left { max-width: 60%; }
   .brand { font-size: 20px; }
   .tagline { font-size: 10px; }
-  /* Hide desktop greeting/sync/sync-btn in navbar on small screens */
-  #greeting, #sync-status, #sync-btn { display: none; }
+  /* Hide desktop greeting/sync/save-btn in navbar on small screens */
+  #greeting, #save-status, #save-btn { display: none; }
   /* Show mobile equivalents in the dropdown */
   .menu-appbar-mobile { display: flex; }
 }
 
 @media (min-width: 761px) {
   /* Hide mobile equivalents on larger screens */
-  #greeting-mobile, #sync-status-mobile, #sync-btn-mobile, .menu-sep { display: none; }
+  #greeting-mobile, #save-status-mobile, #save-btn-mobile, .menu-sep { display: none; }
 }
 
 /* Autosave toggle */
