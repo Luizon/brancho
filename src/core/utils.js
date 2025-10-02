@@ -1,16 +1,3 @@
-const observer = new ResizeObserver(entries => {
-  for (const entry of entries) {
-    const el = entry.target;
-    
-    updateTreeLineHeight(el);
-    
-    animateReapearAllTreeLines()
-    setTimeout(() => {
-      updateAllTreeLines();
-    }, 500);
-  }
-});
-
 function replaceURLsWithContent(text) {
   const urlRegex = /\b(https?:\/\/[^\s\n\t]+)\b/g;
 
@@ -143,87 +130,6 @@ function hideInsertionLine() {
   if (window.insertionLine) window.insertionLine.style.display = "none";
 }
 
-function addTreeLines(taskElement) {
-  if (taskElement.classList.contains('subtask')) {
-    if (!taskElement.querySelector('.tree-line-horizontal')) {
-      const horizontalLine = document.createElement('div');
-      horizontalLine.className = 'tree-line-horizontal';
-      taskElement.appendChild(horizontalLine);
-    }
-  }
-  
-  const subtasksList = taskElement.querySelector('.subtasks');
-  if (subtasksList && subtasksList.id !== 'taskList') {
-    if (!subtasksList.querySelector('.tree-line-vertical')) {
-      const verticalLine = document.createElement('div');
-      verticalLine.className = 'tree-line-vertical';
-      subtasksList.appendChild(verticalLine);
-    }
-  }
-}
-
-function updateTreeLineHeight(ulElement) {
-  if (!ulElement || ulElement.id === 'taskList') return;
-  
-  const verticalLine = ulElement.querySelector('.tree-line-vertical');
-  if (verticalLine) {
-    const lastChild = Array.from(ulElement.children).filter(
-      child => child.tagName === 'LI'
-    ).pop();
-    
-    if (lastChild) {
-      const ulRect = ulElement.getBoundingClientRect();
-      const lastChildRect = lastChild.getBoundingClientRect();
-      const height = (lastChildRect.top - ulRect.top + 33);
-      verticalLine.style.height = Math.max(height, 0) + 'px';
-    } else {
-      verticalLine.style.height = '0px';
-    }
-  }
-}
-
-function removeTreeLines(taskElement) {
-  const horizontalLine = taskElement.querySelector('.tree-line-horizontal');
-  if (horizontalLine) {
-    horizontalLine.remove();
-  }
-  
-  const subtasksList = taskElement.querySelector('.subtasks');
-  if (subtasksList) {
-    const verticalLine = subtasksList.querySelector('.tree-line-vertical');
-    if (verticalLine) {
-      verticalLine.remove();
-    }
-  }
-}
-
-function updateAllTreeLines() {
-  document.querySelectorAll('ul.subtasks').forEach(ul => {
-    if (ul.id !== 'taskList') {
-      updateTreeLineHeight(ul);
-    }
-  });
-}
-
-function animateReapearAllTreeLines() {
-  const checkedId = Math.random();
-  document.querySelectorAll('.tree-line-vertical').forEach(verticalLine => {
-    if(verticalLine.getAttribute('checkeId') != checkedId ) {
-      verticalLine.setAttribute('checkeId', checkedId);
-      verticalLine.style.animation = "none";
-      void verticalLine.offsetWidth; // Force reflow
-      verticalLine.style.animation = "fade-in-tree-line 1s ease-out forwards";
-    }
-  });
-  document.querySelectorAll('.tree-line-horizontal').forEach(horizontalLine => {
-    if(horizontalLine.getAttribute('checkeId') != checkedId ) {
-      horizontalLine.setAttribute('checkeId', checkedId);
-      horizontalLine.style.animation = "none";
-      void horizontalLine.offsetWidth; // Force reflow
-      horizontalLine.style.animation = "fade-in-tree-line 1s ease-out forwards";
-    }
-  });
-}
 
 function maximize(sublist, description) {
   sublist.style.animation = "none";
@@ -241,21 +147,15 @@ function maximize(sublist, description) {
     description.classList.remove("hidden");
   }
   
-  animateReapearAllTreeLines();
-  setTimeout(() => {
-    updateTreeLineHeight(sublist);
-    updateAllTreeLines();
-  }, 500);
+  
 }
 
 function minimize(sublist, description) {
   sublist.style.animation = "none";
   void sublist.offsetWidth;
   sublist.style.animation = "fadeOutSubtasks 0.3s ease-out forwards";
-  animateReapearAllTreeLines()
   setTimeout(() => {
     sublist.classList.add("hidden");
-    updateAllTreeLines();
   }, 500);
 
   const toggleButton = sublist.parentElement.querySelector(".btn-toggle");
@@ -276,14 +176,3 @@ window.maximize = maximize;
 window.minimize = minimize;
 window.replaceURLsWithContent = replaceURLsWithContent;
 window.processLists = processLists; 
-window.addTreeLines = addTreeLines;
-window.updateTreeLineHeight = updateTreeLineHeight;
-window.removeTreeLines = removeTreeLines;
-window.updateAllTreeLines = updateAllTreeLines;
-
-window.addEventListener('resize', () => {
-  animateReapearAllTreeLines()
-  setTimeout(updateAllTreeLines, 500);
-});
-
-window.observer = observer; 

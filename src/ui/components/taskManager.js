@@ -19,8 +19,6 @@ function addTask(text = "New task", parent = document.getElementById("taskList")
   parent.appendChild(li);
   
   addTaskEventListeners(li);
-  window.observer.observe(li.querySelector("ul.subtasks"));
-  window.addTreeLines(li);
 
   if(level > 0) {
     parent.parentElement.querySelector(".btn-toggle").disabled = false;
@@ -47,11 +45,6 @@ function addTask(text = "New task", parent = document.getElementById("taskList")
   selection.removeAllRanges();
   selection.addRange(range);
 
-  window.animateReapearAllTreeLines();
-  setTimeout(() => {
-    window.updateTreeLineHeight(parent);
-    window.updateAllTreeLines();
-  }, 500);
 
   window.saveToLocalStorage();
 }
@@ -66,17 +59,11 @@ function removeTask(button) {
   taskElement.style.animation = "fadeOutTask 0.4s ease-out forwards";
 
   taskElement.classList.add("removing");
-  window.removeTreeLines(taskElement);
   
-  window.animateReapearAllTreeLines();
   setTimeout(() => {
     const parentTask = taskElement.parentElement.closest("li");
-    const parentUl = taskElement.parentElement;
 
     taskElement.remove();
-    
-    window.updateTreeLineHeight(parentUl);
-    window.updateAllTreeLines();
     
     if (parentTask) {
       const hasSubtasks = parentTask.querySelector(".subtasks").children.length > 1;

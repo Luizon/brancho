@@ -27,7 +27,7 @@ function generateTasksString() {
   return output.join("\n");
 }
 
-function exportList() { // Backward-compatible export; also returns string
+function exportList() {
   const text = generateTasksString();
   localStorage.setItem("hasSaved", "true");
   localStorage.setItem("savedText", text);
@@ -44,7 +44,6 @@ function processList() {
   void taskList.offsetWidth;
   taskList.style.animation = "fadeIn 0.5s ease-out forwards";
 
-  // Get text from LocalStorage instead of textarea
   const text = localStorage.getItem("hasSaved") === "true"
   ? localStorage.getItem("savedText")
   : `[ ] Example main task
@@ -97,12 +96,10 @@ function processList() {
     `;
 
     window.addTaskEventListeners(li);
-    window.addTreeLines(li);
 
     while (stack[stack.length - 1].level >= level) stack.pop();
     stack[stack.length - 1].element.appendChild(li);
     stack.push({ element: li.querySelector(".subtasks"), level });
-    window.observer.observe(li.querySelector("ul.subtasks"));
 
     setTimeout(() => {
       const toggleButton = li.querySelector(".btn-toggle");
@@ -118,7 +115,6 @@ function processList() {
       const description = li.getAttribute("data-description") || "";
       if (!hasSubtasks && description.trim() === "") {
         toggleButton.disabled = true;
-        toggleButton.style.color = "#0000";
       }
     }, 10);
   });
