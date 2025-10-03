@@ -85,11 +85,11 @@ function processList() {
     li.setAttribute("data-description", description);
 
     li.innerHTML = `
-      <button class="btn-toggle" onclick="toggleChildren(this)">▼</button>
-      <button onclick="removeTask(this)">🗑</button>
+      <button class="btn-toggle" onclick="toggleChildren(this)"><img src="./assets/img/triangle-down-filled.svg" alt="toggle" width="14" height="14"></button>
+      <button onclick="removeTask(this)"><img src="./assets/img/trash.svg" alt="remove" width="14" height="14"></button>
       <input type="checkbox" ${isChecked ? "checked" : ""}>
       <span contenteditable="true">${text}</span>
-      <button onclick="openModal(this)">📝</button>
+      <button onclick="openModal(this)"><img src="./assets/img/edit.svg" alt="edit" width="14" height="14"></button>
       <button onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})">+</button>
       <div class="task-description ${description ? "" : "hidden"}">${innerDescription}</div>
       <ul class="subtasks task"></ul>
@@ -111,10 +111,11 @@ function processList() {
       }
 
       // disable the toggle button if there are no subtasks and no description
-      const hasSubtasks = li.querySelector(".subtasks").children.length > 1;
+      const hasSubtasks = li.querySelectorAll(".subtasks > li").length > 0;
       const description = li.getAttribute("data-description") || "";
       if (!hasSubtasks && description.trim() === "") {
         toggleButton.disabled = true;
+        toggleButton.children[0].style.opacity = "0";
       }
     }, 10);
   });
@@ -137,7 +138,7 @@ function saveToFile() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  if (window.showToast) window.showToast(`📄 List saved to ${filename}`); else window.showToast(`📄 List saved to ${filename}`);
+  if (window.showToast) window.showToast(`<img src="./assets/img/file-text.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>List saved to ${filename}`); else window.showToast(`<img src="./assets/img/file-text.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>List saved to ${filename}`);
   const fabMenuPanel = document.getElementById("fabMenuPanel");
   if (fabMenuPanel) fabMenuPanel.classList.remove("show");
 }
@@ -152,9 +153,9 @@ async function loadFile(event) {
     if (!hasValidTask) throw new Error("Invalid file format. Expected tasks with '[ ]' or '[x]' markers.");
     localStorage.setItem("savedText", text);
     window.processList();
-    if (window.showToast) window.showToast(`📄 Loaded ${file.name} successfully`); else window.showToast(`📄 Loaded ${file.name} successfully`);
+    if (window.showToast) window.showToast(`<img src="./assets/img/file-text.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>Loaded ${file.name} successfully`); else window.showToast(`<img src="./assets/img/file-text.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>Loaded ${file.name} successfully`);
   } catch (error) {
-    if (window.showToast) window.showToast(`❌ ${error.message || 'Failed to load file'}`, 'error'); else window.showToast(`❌ ${error.message || 'Failed to load file'}`, 'error');
+    if (window.showToast) window.showToast(`<img src="./assets/img/cross-mark.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>${error.message || 'Failed to load file'}`, 'error'); else window.showToast(`<img src="./assets/img/cross-mark.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>${error.message || 'Failed to load file'}`, 'error');
   }
   const fabMenuPanel = document.getElementById("fabMenuPanel");
   if (fabMenuPanel) fabMenuPanel.classList.remove("show");

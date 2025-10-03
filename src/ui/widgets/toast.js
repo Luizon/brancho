@@ -3,7 +3,7 @@ function showToast(message, type) {
     if (!container) return;
     const el = document.createElement("div");
     el.className = `toast${type === 'error' ? ' error' : type === 'success' ? ' success' : ''}`;
-    el.textContent = message;
+    el.innerHTML = message;
     container.appendChild(el);
     setTimeout(() => {
       el.classList.add('removing');

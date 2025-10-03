@@ -133,7 +133,7 @@ async function handleLogin(e) {
       document.getElementById("auth-password").value = "";
     }
     if (window.showToast && me && me.name) {
-      window.showToast(`👋 Welcome back, ${me.name}!`, 'success');
+      window.showToast(`<img src="./assets/img/waving-hand.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>Welcome back, ${me.name}!`, 'success');
     }
   } catch (err) {
     if (window.showInfo) window.showInfo('Login failed', err.message || 'Unable to login.');
@@ -179,7 +179,7 @@ async function handleRegister(e) {
     document.getElementById("auth-password").value = "";
     const me = currentUser;
     if (window.showToast && me && me.name) {
-      window.showToast(`🤠 Welcome to Brancho, ${me.name}!`, 'success');
+      window.showToast(`<img src="./assets/img/cowboy-hat-face.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>Welcome to Brancho, ${me.name}!`, 'success');
     }
   } catch (err) {
     if (window.showInfo) window.showInfo('Registration failed', err.message || 'Unable to register.');
@@ -472,7 +472,7 @@ function openDeleteAccountModal() {
   const confirmBtn = document.getElementById('promptConfirm');
   const cancelBtn = document.getElementById('promptCancel');
   if (!modal || !titleEl || !bodyEl || !inputsEl || !confirmBtn || !cancelBtn) return;
-  titleEl.textContent = '⚠️ Delete your account';
+  titleEl.innerHTML = '<img src="./assets/img/warning.svg" alt="" width="18" height="18" style="vertical-align:middle; margin-right:6px;"/>Delete your account';
   bodyEl.innerHTML = 'Once deleted, your account and cloud data will be <strong>gone forever</strong>. Your tasks will still be available locally on this device.';
   inputsEl.innerHTML = '';
   const input = document.createElement('input');
@@ -559,7 +559,7 @@ async function showPrompt({ title, body, inputs = [], confirmText = 'OK', cancel
 
 async function handleDeleteAccountFlow() {
   const result = await showPrompt({
-    title: '⚠️ Delete your account',
+    title: '<img src="./assets/img/warning.svg" alt="" width="18" height="18" style="vertical-align:middle; margin-right:6px;"/>Delete your account',
     body: 'Once deleted, your account and cloud data will be <strong>gone forever</strong>. Your tasks will still be available locally on this device.',
     inputs: [{ id: 'password', type: 'password', placeholder: 'Enter your password' }],
     confirmText: 'Delete account',
