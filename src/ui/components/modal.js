@@ -44,9 +44,9 @@ function saveDescription() {
       descElement.classList.add("hidden");
 
     const toggleButton = currentTaskElement.querySelector(".btn-toggle");
-    const hasSubtasks = currentTaskElement.querySelector(".subtasks").children.length > 1;
+    const hasSubtasks = currentTaskElement.querySelectorAll(".subtasks > li").length > 0;
     toggleButton.disabled = !hasSubtasks && rawText === "";
-    toggleButton.style.color = toggleButton.disabled ? "#FFF0" : "#FFFF";
+    toggleButton.children[0].style.opacity = toggleButton.disabled ? "0" : "1";
 
     window.saveToLocalStorage();
   }

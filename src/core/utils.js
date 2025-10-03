@@ -138,7 +138,7 @@ function maximize(sublist, description) {
   sublist.classList.remove("hidden");
 
   const toggleButton = sublist.parentElement.querySelector(".btn-toggle");
-  toggleButton.textContent = "▼";
+  toggleButton.innerHTML = '<img src="./assets/img/triangle-down-filled.svg" alt="toggle" width="14" height="14">';
 
   if (description.innerHTML.trim() !== "") {
     description.style.animation = "none";
@@ -159,7 +159,7 @@ function minimize(sublist, description) {
   }, 500);
 
   const toggleButton = sublist.parentElement.querySelector(".btn-toggle");
-  toggleButton.textContent = "▶";
+  toggleButton.innerHTML = '<img src="./assets/img/triangle-right-filled.svg" alt="toggle" width="14" height="14">';
 
   if (description.innerHTML.trim() !== "") {
     description.style.animation = "none";

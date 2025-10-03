@@ -81,6 +81,7 @@ function setupDragAndDrop(li) {
 
         const toggleButton = li.querySelector(".btn-toggle");
         toggleButton.disabled = false;
+        toggleButton.children[0].style.opacity = "1";
         window.maximize(sublist, li.querySelector(".task-description"));
       }
 
@@ -90,11 +91,11 @@ function setupDragAndDrop(li) {
       }
       if (window.lastParent) {
         window.validateParentOnRemove(window.lastParent);
-        const hasSubtasks = window.lastParent.querySelector(".subtasks").children.length > 1;
+        const hasSubtasks = window.lastParent.querySelectorAll(".subtasks > li").length > 0;
         const hasDescription = window.lastParent.getAttribute("data-description").trim() !== "";
         const toggleButton = window.lastParent.querySelector(".btn-toggle");
         toggleButton.disabled = !hasSubtasks && !hasDescription;
-        toggleButton.style.color = toggleButton.disabled ? "#FFF0" : "#FFFF";
+        toggleButton.children[0].style.opacity = toggleButton.disabled ? "0" : "1";
       }
 
       window.saveToLocalStorage();

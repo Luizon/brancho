@@ -5,11 +5,11 @@ function addTask(text = "New task", parent = document.getElementById("taskList")
   li.style.setProperty('--level', level);
 
   li.innerHTML = `
-    <button class="btn-toggle" onclick="toggleChildren(this)" disabled style="color: #FFF0;">▼</button>
-    <button onclick="removeTask(this)">🗑</button>
+    <button class="btn-toggle" onclick="toggleChildren(this)" disabled style="color: #FFF0;"><img src="./assets/img/triangle-down-filled.svg" style="opacity: 0;" alt="toggle" width="14" height="14"></button>
+    <button onclick="removeTask(this)"><img src="./assets/img/trash.svg" alt="remove" width="14" height="14"></button>
     <input type="checkbox">
     <span contenteditable="true">${text}</span>
-    <button onclick="openModal(this)">📝</button>
+    <button onclick="openModal(this)"><img src="./assets/img/edit.svg" alt="edit" width="14" height="14"></button>
     <button onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})">+</button>
     <div class="task-description hidden"></div>
     <ul class="subtasks task"></ul>
@@ -22,7 +22,7 @@ function addTask(text = "New task", parent = document.getElementById("taskList")
 
   if(level > 0) {
     parent.parentElement.querySelector(".btn-toggle").disabled = false;
-    parent.parentElement.querySelector(".btn-toggle").style.color = "#FFFF";
+    parent.parentElement.querySelector(".btn-toggle").children[0].style.opacity = "1";
     if(parent.classList.contains("hidden")) {
       window.maximize(parent, parent.parentElement.querySelector(".task-description"));
     }
@@ -66,11 +66,11 @@ function removeTask(button) {
     taskElement.remove();
     
     if (parentTask) {
-      const hasSubtasks = parentTask.querySelector(".subtasks").children.length > 1;
+      const hasSubtasks = parentTask.querySelectorAll(".subtasks > li").length > 0;
       const hasDescription = parentTask.getAttribute("data-description").trim() !== "";
       const toggleButton = parentTask.querySelector(".btn-toggle");
       toggleButton.disabled = !hasSubtasks && !hasDescription;
-      toggleButton.style.color = toggleButton.disabled ? "#FFF0" : "#FFFF";
+      toggleButton.children[0].style.opacity = toggleButton.disabled ? "0" : "1";
 
       window.validateParentOnRemove(parentTask);
     }
