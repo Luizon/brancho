@@ -31,7 +31,14 @@ async function apiRequest(path, options = {}) {
     data = null;
   }
   if (!response.ok) {
-    const message = data && data.error ? data.error : `HTTP ${response.status}`;
+    let message = data && data.error ? data.error : `HTTP ${response.status}`;
+    if (token && response.status === 401) {
+      message = "Your session has expired. Please login again.";
+      if (typeof window.closeAllModals === "function") {
+        window.closeAllModals();
+      }
+      window.auth.handleLogout();
+    }
     const error = new Error(message);
     error.status = response.status;
     error.data = data;
