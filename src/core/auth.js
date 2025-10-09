@@ -193,8 +193,11 @@ async function handleRegister(e) {
   closeAuthModal();
 }
 
-function handleLogout() {
+function handleLogout(clearTasks = true) {
   localStorage.removeItem("authToken");
+  if (clearTasks) {
+    window.confirmClear(true);
+  }
   currentUser = null;
   showLoggedOutUI();
 }
@@ -346,12 +349,30 @@ function showConflictModal({ localText, remoteText }) {
   };
 
   logoutBtn.onclick = () => {
-    handleLogout();
+    handleLogout(false);
     cleanup();
   };
 }
 
 window.initAuthAndTasks = initAuthAndTasks;
+function closeAllModals() {
+  // Close description modal if open
+  if (typeof window.closeModal === "function") {
+    window.closeModal();
+  }
+  // Close auth modal via its dedicated closer
+  if (typeof closeAuthModal === "function") {
+    closeAuthModal();
+  }
+  // Hide any modal elements currently shown
+  const modals = document.querySelectorAll('.modal');
+  modals.forEach((modalEl) => {
+    modalEl.classList.remove('show');
+    modalEl.classList.add('hidden');
+  });
+  // Restore scroll just in case any modal locked it
+  document.body.style.overflow = "";
+}
 window.auth = {
   ensureAuthState,
   fetchAndLoadTasksIfNeeded,
@@ -361,6 +382,7 @@ window.auth = {
   handleUpdateName,
   handleChangePassword,
 };
+window.closeAllModals = closeAllModals;
 
 function openAuthModal(mode) {
   const modal = document.getElementById("authModal");
@@ -594,5 +616,3 @@ function showInfo(title, body) {
 }
 
 window.showInfo = showInfo;
-
-

@@ -52,7 +52,7 @@ function processList() {
 		[ ] task 5
 	[x] task 3`;
   
-  const lines = text.split("\n").filter(line => line.trim() !== "");
+  const lines = text ? text.split("\n").filter(line => line.trim() !== "") : [];
   const root = document.getElementById("taskList");
   root.innerHTML = "";
 
@@ -131,7 +131,7 @@ function saveToFile() {
   const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  const filename = `todo-list_${new Date().toISOString().replaceAll(/[T:-]/g, ' ').split('.')[0]}.txt`;
+  const filename = `Brancho-todo-list_${new Date().toISOString().replaceAll(/[T:-]/g, ' ').split('.')[0]}.txt`;
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
@@ -150,7 +150,12 @@ async function loadFile(event) {
   try {
     const text = await file.text();
     const hasValidTask = text.split('\n').some(line => line.trim().match(/^\s*\[[ x]\]\s+\S+/));
-    if (!hasValidTask) throw new Error("Invalid file format. Expected tasks with '[ ]' or '[x]' markers.");
+    if (!hasValidTask) {
+      if(text)
+        throw new Error("Invalid file format. Expected tasks with '[ ]' or '[x]' markers.");
+      else
+        throw new Error("File is empty.");
+    }
     localStorage.setItem("savedText", text);
     window.processList();
     if (window.showToast) window.showToast(`<img src="./assets/img/file-text.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>Loaded ${file.name} successfully`); else window.showToast(`<img src="./assets/img/file-text.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>Loaded ${file.name} successfully`);

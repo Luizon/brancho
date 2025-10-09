@@ -8,7 +8,7 @@ function showToast(message, type) {
     setTimeout(() => {
       el.classList.add('removing');
       setTimeout(() => el.remove(), 250);
-    }, 2000);
+    }, 5000);
   }
 
 window.showToast = showToast;

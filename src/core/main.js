@@ -69,11 +69,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  window.confirmClear = () => {
+  window.confirmClear = (autoLogOut = false) => {
     localStorage.removeItem("savedText");
     const taskList = document.getElementById("taskList");
     taskList.innerHTML = "";
-    if (window.showToast) window.showToast('<img src="./assets/img/trash.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>List cleared');
+    if (!autoLogOut && window.showToast) {
+      window.showToast('<img src="./assets/img/trash.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>List cleared');
+    }
     window.closeConfirmModal();
   };
 
