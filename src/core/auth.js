@@ -44,7 +44,7 @@ async function ensureAuthState() {
   }
 }
 
-async function fetchAndLoadTasksIfNeeded() {
+async function fetchAndLoadTasksIfNeeded(isLoggingIn = false) {
   if (!window.api.getAuthToken()) return false;
   try {
     isFetchingInitialTasks = true;
@@ -56,12 +56,13 @@ async function fetchAndLoadTasksIfNeeded() {
     if (remoteText && localText && remoteText !== localText) {
       if (window.sync && window.sync.blockSync) window.sync.blockSync();
       hasResolvedConflict = false;
-      showConflictModal({ localText, remoteText });
+      showConflictModal({ localText, remoteText, isLoggingIn });
       return false; // do not render yet
     }
 
     const chosen = remoteText || localText;
     if (typeof chosen === "string" && chosen !== "") {
+      localStorage.setItem("hasSaved", "true");
       localStorage.setItem("savedText", chosen);
     }
     window.processList();
@@ -123,7 +124,7 @@ async function handleLogin(e) {
     await window.api.loginUser(email, password);
     const me = await ensureAuthState();
     if (window.sync && window.sync.blockSync) window.sync.blockSync();
-    await fetchAndLoadTasksIfNeeded();
+    await fetchAndLoadTasksIfNeeded(true);
     if (!isFetchingInitialTasks && !localStorage.getItem("savedText")) {
       // Ensure there is something to render
       window.processList();
@@ -173,7 +174,7 @@ async function handleRegister(e) {
     if (primaryBtn) primaryBtn.textContent = "Loading...";
     await window.api.loginUser(email, password);
     await ensureAuthState();
-    await fetchAndLoadTasksIfNeeded();
+    await fetchAndLoadTasksIfNeeded(true);
     document.getElementById("auth-name").value = "";
     document.getElementById("auth-email").value = "";
     document.getElementById("auth-password").value = "";
@@ -307,7 +308,7 @@ async function initAuthAndTasks() {
   }
 }
 
-function showConflictModal({ localText, remoteText }) {
+function showConflictModal({ localText, remoteText, isLoggingIn }) {
   const modal = document.getElementById("conflictModal");
   if (!modal) return;
   modal.classList.remove("hidden");
@@ -318,6 +319,25 @@ function showConflictModal({ localText, remoteText }) {
   const useLocalBtn = document.getElementById("conflict-use-local");
   const useRemoteBtn = document.getElementById("conflict-use-remote");
   const logoutBtn = document.getElementById("conflict-logout");
+  const textEl = modal.querySelector('.conflict-text');
+
+  if (textEl) {
+    if (isLoggingIn) {
+      textEl.innerHTML = 'The tasks saved on this device are <strong>different</strong> from the ones in your account. Please choose which version you want to keep — the other one will be <strong>overwritten</strong>. If you\'re not sure, you can log out now and decide later.';
+    } else {
+      textEl.innerHTML = 'You have unsaved changes from last session, do you want to restore them?';
+    }
+  }
+
+  if (useLocalBtn) {
+    useLocalBtn.textContent = isLoggingIn ? 'Keep Device Tasks' : 'Restore last changes';
+  }
+  if (useRemoteBtn) {
+    useRemoteBtn.textContent = isLoggingIn ? 'Load Account Tasks' : 'Continue without restoring';
+  }
+  if (logoutBtn) {
+    logoutBtn.classList.toggle('hidden', !isLoggingIn);
+  }
 
   const cleanup = () => {
     modal.classList.remove("show");
