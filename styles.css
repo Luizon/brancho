@@ -663,6 +663,11 @@ ul {
   text-align: left; 
 }
 
+/* Subtle muted text state for inactive toggles (readable but hints low emphasis) */
+.muted-text {
+  color: rgba(255, 255, 255, 0.75);
+}
+
 .fab-menu button.danger {
   color: #ff4757;
 }
@@ -914,6 +919,13 @@ li.main-task span[contenteditable], li.subtask span[contenteditable] {
   font-size: 16px;
   line-height: 1.4;
   color: inherit;
+  display: inline-block; /* allow width constraints */
+  min-width: 120px; /* prevent collapsing when deeply indented */
+  box-sizing: border-box;
+  max-width: calc(100% - 200px); /* keep within line and wrap before stretching parent */
+  white-space: normal; /* allow wrapping */
+  overflow-wrap: anywhere; /* break long words/URLs */
+  word-break: break-word;
 }
 
 li.main-task span[contenteditable]:focus, li.subtask span[contenteditable]:focus {
@@ -935,6 +947,9 @@ li.main-task span[contenteditable]:focus, li.subtask span[contenteditable]:focus
   overflow-wrap: break-word;
   position: relative;
   z-index: 3;
+  white-space: pre-wrap; /* preserve newlines, wrap long lines */
+  word-break: break-word;
+  overflow: hidden; /* avoid stretching ancestors */
 }
 
 .task-description a {

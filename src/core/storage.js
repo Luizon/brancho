@@ -96,6 +96,12 @@ function processList() {
     `;
 
     window.addTaskEventListeners(li);
+    // Respect hide completed on initial render
+    const show = localStorage.getItem('showCompleted') === 'true' || localStorage.getItem('showCompleted') === null;
+    const hide = !show;
+    if (hide && isChecked) {
+      li.style.display = 'none';
+    }
 
     while (stack[stack.length - 1].level >= level) stack.pop();
     stack[stack.length - 1].element.appendChild(li);
