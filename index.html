@@ -46,6 +46,7 @@
               <hr class="menu-sep">
             </div>
             <button id="autosave-toggle" role="menuitem" class="autosave-btn">Autosave</button>
+                <button id="hide-completed-toggle" role="menuitem" class="autosave-btn">Hide completed</button>
             <button id="auth-update-name-btn" role="menuitem">Update name</button>
             <button id="auth-change-pass-btn" role="menuitem">Change password</button>
             <button id="auth-delete-account-btn" role="menuitem" class="danger">Delete account</button>
@@ -63,8 +64,9 @@
   </div>
 
   <div class="fab-container" id="fabContainer">
-    <button id="fabButton" class="floating-add-btn" title="Menu">+</button>
+    <button id="fabButton" class="floating-add-btn" title="Menu"><img src="./assets/img/plus.svg" alt="add" width="22" height="22"></button>
     <div class="fab-menu" id="fabMenuPanel">
+      <button id="menuToggleCompleted"><img src="./assets/img/triangle-right-filled.svg" alt="" width="18" height="18" style="vertical-align:middle; margin-right:6px;">Show completed</button>
       <button id="menuAddMain"><img src="./assets/img/plus.svg" alt="" width="18" height="18" style="vertical-align:middle; margin-right:6px;">Add Main Task</button>
       <button id="menuSaveFile"><img src="./assets/img/download-square.svg" alt="" width="18" height="18" style="vertical-align:middle; margin-right:6px;">Save to File</button>
       <button id="menuLoadFile"><img src="./assets/img/upload-square.svg" alt="" width="18" height="18" style="vertical-align:middle; margin-right:6px;">Load from File</button>
@@ -86,7 +88,7 @@
     </div>
   </div>
 
-  <button onclick="addTask()" class="floating-add-btn" title="Add new task">+</button>
+  <button onclick="addTask()" class="floating-add-btn" title="Add new task"><img src="./assets/img/plus.svg" alt="add" width="14" height="14"></button>
 
   <div id="descriptionModal" class="hidden">
     <div class="modal-content">
@@ -103,9 +105,7 @@
     <div class="modal-content">
       <h2 class="conflict-title"><img src="./assets/img/warning.svg" alt="" width="20" height="20" style="vertical-align:middle; margin-right:6px;">Important action required</h2>
       <p class="conflict-text">
-        The tasks saved on this device are <strong>different</strong> from the ones in your account.
-        Please choose which version you want to keep — the other one will be <strong>overwritten</strong>.
-        If you're not sure, you can log out now and decide later.
+        The tasks saved on this device are <strong>different</strong> from the ones in your account. Please choose which version you want to keep — the other one will be <strong>overwritten</strong>. If you're not sure, you can log out now and decide later.
       </p>
       <div class="modal-buttons">
         <button id="conflict-use-local" class="modal-btn modal-btn-save">Keep Device Tasks</button>

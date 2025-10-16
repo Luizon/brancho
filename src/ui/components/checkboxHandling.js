@@ -32,6 +32,11 @@ function handleCheckboxChange(checkbox) {
   }
 
   window.saveToLocalStorage();
+  // Apply hide/show if feature enabled
+  if (window.setHideCompleted) {
+    const show = localStorage.getItem('showCompleted') === 'true' || localStorage.getItem('showCompleted') === null;
+    window.setHideCompleted(!show);
+  }
 }
 
 function checkParentHierarchy(task) {

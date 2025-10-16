@@ -44,7 +44,7 @@ async function ensureAuthState() {
   }
 }
 
-async function fetchAndLoadTasksIfNeeded() {
+async function fetchAndLoadTasksIfNeeded(isLoggingIn = false) {
   if (!window.api.getAuthToken()) return false;
   try {
     isFetchingInitialTasks = true;
@@ -56,12 +56,13 @@ async function fetchAndLoadTasksIfNeeded() {
     if (remoteText && localText && remoteText !== localText) {
       if (window.sync && window.sync.blockSync) window.sync.blockSync();
       hasResolvedConflict = false;
-      showConflictModal({ localText, remoteText });
+      showConflictModal({ localText, remoteText, isLoggingIn });
       return false; // do not render yet
     }
 
     const chosen = remoteText || localText;
     if (typeof chosen === "string" && chosen !== "") {
+      localStorage.setItem("hasSaved", "true");
       localStorage.setItem("savedText", chosen);
     }
     window.processList();
@@ -86,6 +87,11 @@ function closeAuthModal() {
   document.body.style.overflow = prev;
   if (primaryBtn) primaryBtn.onclick = null;
   if (closeBtn) closeBtn.onclick = null;
+  // Cleanup keyboard handler if present
+  if (modal._onKey) {
+    document.removeEventListener("keydown", modal._onKey);
+    modal._onKey = null;
+  }
   // Reset controls to default state for next open
   if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
   if (closeBtn) closeBtn.disabled = false;
@@ -123,7 +129,7 @@ async function handleLogin(e) {
     await window.api.loginUser(email, password);
     const me = await ensureAuthState();
     if (window.sync && window.sync.blockSync) window.sync.blockSync();
-    await fetchAndLoadTasksIfNeeded();
+    const loaded = await fetchAndLoadTasksIfNeeded(true);
     if (!isFetchingInitialTasks && !localStorage.getItem("savedText")) {
       // Ensure there is something to render
       window.processList();
@@ -132,8 +138,13 @@ async function handleLogin(e) {
       document.getElementById("auth-email").value = "";
       document.getElementById("auth-password").value = "";
     }
-    if (window.showToast && me && me.name) {
-      window.showToast(`<img src="./assets/img/waving-hand.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>Welcome back, ${me.name}!`, 'success');
+    if (me && me.name) {
+      const greetMsg = `<img src="./assets/img/waving-hand.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>Welcome back, ${me.name}!`;
+      if (loaded) {
+        if (window.showToast) window.showToast(greetMsg, 'success');
+      } else {
+        window.pendingToastMessage = greetMsg;
+      }
     }
   } catch (err) {
     if (window.showInfo) window.showInfo('Login failed', err.message || 'Unable to login.');
@@ -173,13 +184,18 @@ async function handleRegister(e) {
     if (primaryBtn) primaryBtn.textContent = "Loading...";
     await window.api.loginUser(email, password);
     await ensureAuthState();
-    await fetchAndLoadTasksIfNeeded();
+    const loaded = await fetchAndLoadTasksIfNeeded(true);
     document.getElementById("auth-name").value = "";
     document.getElementById("auth-email").value = "";
     document.getElementById("auth-password").value = "";
     const me = currentUser;
-    if (window.showToast && me && me.name) {
-      window.showToast(`<img src="./assets/img/cowboy-hat-face.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>Welcome to Brancho, ${me.name}!`, 'success');
+    if (me && me.name) {
+      const greetMsg = `<img src="./assets/img/cowboy-hat-face.svg" alt="" width="16" height="16" style="vertical-align:middle; margin-right:6px;"/>Welcome to Brancho, ${me.name}!`;
+      if (loaded) {
+        if (window.showToast) window.showToast(greetMsg, 'success');
+      } else {
+        window.pendingToastMessage = greetMsg;
+      }
     }
   } catch (err) {
     if (window.showInfo) window.showInfo('Registration failed', err.message || 'Unable to register.');
@@ -307,17 +323,35 @@ async function initAuthAndTasks() {
   }
 }
 
-function showConflictModal({ localText, remoteText }) {
+function showConflictModal({ localText, remoteText, isLoggingIn }) {
   const modal = document.getElementById("conflictModal");
   if (!modal) return;
   modal.classList.remove("hidden");
   modal.classList.add("show");
-  const previousOverflow = document.body.style.overflow;
   document.body.style.overflow = "hidden";
 
   const useLocalBtn = document.getElementById("conflict-use-local");
   const useRemoteBtn = document.getElementById("conflict-use-remote");
   const logoutBtn = document.getElementById("conflict-logout");
+  const textEl = modal.querySelector('.conflict-text');
+
+  if (textEl) {
+    if (isLoggingIn) {
+      textEl.innerHTML = 'The tasks saved on this device are <strong>different</strong> from the ones in your account. Please choose which version you want to keep — the other one will be <strong>overwritten</strong>. If you\'re not sure, you can log out now and decide later.';
+    } else {
+      textEl.innerHTML = 'You have unsaved changes from last session, do you want to restore them?';
+    }
+  }
+
+  if (useLocalBtn) {
+    useLocalBtn.textContent = isLoggingIn ? 'Keep Device Tasks' : 'Restore last changes';
+  }
+  if (useRemoteBtn) {
+    useRemoteBtn.textContent = isLoggingIn ? 'Load Account Tasks' : 'Continue without restoring';
+  }
+  if (logoutBtn) {
+    logoutBtn.classList.toggle('hidden', !isLoggingIn);
+  }
 
   const cleanup = () => {
     modal.classList.remove("show");
@@ -325,7 +359,8 @@ function showConflictModal({ localText, remoteText }) {
     useLocalBtn.onclick = null;
     useRemoteBtn.onclick = null;
     logoutBtn.onclick = null;
-    document.body.style.overflow = previousOverflow || "";
+    // Always restore scroll; avoid re-applying a stale "hidden" from other modals
+    document.body.style.overflow = "";
   };
 
   useLocalBtn.onclick = async () => {
@@ -338,6 +373,10 @@ function showConflictModal({ localText, remoteText }) {
     if (window.sync && window.sync.syncToCloud) {
       await window.sync.syncToCloud();
     }
+    if (window.pendingToastMessage && window.showToast) {
+      window.showToast(window.pendingToastMessage, 'success');
+      window.pendingToastMessage = null;
+    }
   };
 
   useRemoteBtn.onclick = async () => {
@@ -346,11 +385,17 @@ function showConflictModal({ localText, remoteText }) {
     if (window.sync && window.sync.unblockSync) window.sync.unblockSync();
     hasResolvedConflict = true;
     cleanup();
+    if (window.pendingToastMessage && window.showToast) {
+      window.showToast(window.pendingToastMessage, 'success');
+      window.pendingToastMessage = null;
+    }
   };
 
   logoutBtn.onclick = () => {
     handleLogout(false);
     cleanup();
+    // Do not show greeting on logout
+    window.pendingToastMessage = null;
   };
 }
 
@@ -406,11 +451,24 @@ function openAuthModal(mode) {
   const previousOverflow = document.body.style.overflow;
   document.body.style.overflow = "hidden";
   if (modal && modal.dataset) { modal.dataset.prevOverflow = previousOverflow || ""; }
+  // Pressing Enter triggers primary action; Escape triggers cancel
+  const onKey = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (primaryBtn && !primaryBtn.disabled) primaryBtn.click();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      if (closeBtn && !closeBtn.disabled) closeBtn.click();
+    }
+  };
+  document.addEventListener("keydown", onKey);
+  modal._onKey = onKey;
   const cleanup = () => {
     modal.classList.remove("show");
     modal.classList.add("hidden");
     document.body.style.overflow = previousOverflow || "";
     primaryBtn.onclick = null; closeBtn.onclick = null;
+    if (modal._onKey) { document.removeEventListener("keydown", modal._onKey); modal._onKey = null; }
     // Reset controls to default state when closing via Cancel
     if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
     if (closeBtn) closeBtn.disabled = false;
@@ -437,7 +495,9 @@ function openUpdateNameModal() {
   modal.classList.remove("hidden");
   modal.classList.add("show");
   const prev = document.body.style.overflow; document.body.style.overflow = "hidden";
-  const cleanup = () => { input.value = ""; modal.classList.remove("show"); modal.classList.add("hidden"); document.body.style.overflow = prev || ""; confirm.onclick = null; cancel.onclick = null; confirm.disabled = false; confirm.textContent = "Update"; };
+  const cleanup = () => { input.value = ""; modal.classList.remove("show"); modal.classList.add("hidden"); document.body.style.overflow = prev || ""; confirm.onclick = null; cancel.onclick = null; confirm.disabled = false; confirm.textContent = "Update"; if (modal._onKey) { document.removeEventListener("keydown", modal._onKey); modal._onKey = null; } };
+  const onKey = (e) => { if (e.key === "Enter") { e.preventDefault(); if (!confirm.disabled) confirm.click(); } else if (e.key === "Escape") { e.preventDefault(); cancel.click(); } };
+  document.addEventListener("keydown", onKey); modal._onKey = onKey;
   confirm.onclick = async () => {
     if (!input.value.trim()) return;
     confirm.disabled = true;
@@ -468,7 +528,9 @@ function openChangePassModal() {
   modal.classList.remove("hidden");
   modal.classList.add("show");
   const prev = document.body.style.overflow; document.body.style.overflow = "hidden";
-  const cleanup = () => { cur.value = ""; nw.value = ""; modal.classList.remove("show"); modal.classList.add("hidden"); document.body.style.overflow = prev || ""; confirm.onclick = null; cancel.onclick = null; confirm.disabled = false; confirm.textContent = "Change"; };
+  const cleanup = () => { cur.value = ""; nw.value = ""; modal.classList.remove("show"); modal.classList.add("hidden"); document.body.style.overflow = prev || ""; confirm.onclick = null; cancel.onclick = null; confirm.disabled = false; confirm.textContent = "Change"; if (modal._onKey) { document.removeEventListener("keydown", modal._onKey); modal._onKey = null; } };
+  const onKey = (e) => { if (e.key === "Enter") { e.preventDefault(); if (!confirm.disabled) confirm.click(); } else if (e.key === "Escape") { e.preventDefault(); cancel.click(); } };
+  document.addEventListener("keydown", onKey); modal._onKey = onKey;
   confirm.onclick = async () => {
     if (!cur.value || !nw.value) return;
     confirm.disabled = true;
@@ -510,7 +572,9 @@ function openDeleteAccountModal() {
   modal.classList.remove('hidden');
   modal.classList.add('show');
   const prev = document.body.style.overflow; document.body.style.overflow = 'hidden';
-  const cleanup = () => { modal.classList.remove('show'); modal.classList.add('hidden'); document.body.style.overflow = prev || ''; confirmBtn.onclick = null; cancelBtn.onclick = null; confirmBtn.disabled = false; cancelBtn.disabled = false; confirmBtn.textContent = 'Delete account'; };
+  const cleanup = () => { modal.classList.remove('show'); modal.classList.add('hidden'); document.body.style.overflow = prev || ''; confirmBtn.onclick = null; cancelBtn.onclick = null; confirmBtn.disabled = false; cancelBtn.disabled = false; confirmBtn.textContent = 'Delete account'; if (modal._onKey) { document.removeEventListener('keydown', modal._onKey); modal._onKey = null; } };
+  const onKey = (e) => { if (e.key === 'Enter') { e.preventDefault(); if (!confirmBtn.disabled) confirmBtn.click(); } else if (e.key === 'Escape') { e.preventDefault(); cancelBtn.click(); } };
+  document.addEventListener('keydown', onKey); modal._onKey = onKey;
   cancelBtn.onclick = () => { cleanup(); };
   confirmBtn.onclick = async () => {
     const passwordEl = document.getElementById('deleteAccountPassword');
@@ -565,7 +629,9 @@ async function showPrompt({ title, body, inputs = [], confirmText = 'OK', cancel
     modal.classList.remove('hidden');
     modal.classList.add('show');
     const prev = document.body.style.overflow; document.body.style.overflow = 'hidden';
-    const cleanup = () => { modal.classList.remove('show'); modal.classList.add('hidden'); document.body.style.overflow = prev || ''; confirmBtn.onclick = null; cancelBtn.onclick = null; };
+    const cleanup = () => { modal.classList.remove('show'); modal.classList.add('hidden'); document.body.style.overflow = prev || ''; confirmBtn.onclick = null; cancelBtn.onclick = null; if (modal._onKey) { document.removeEventListener('keydown', modal._onKey); modal._onKey = null; } };
+    const onKey = (e) => { if (e.key === 'Enter') { e.preventDefault(); if (!confirmBtn.disabled) confirmBtn.click(); } else if (e.key === 'Escape') { e.preventDefault(); cancelBtn.click(); } };
+    document.addEventListener('keydown', onKey); modal._onKey = onKey;
     cancelBtn.onclick = () => { cleanup(); resolve(null); };
     confirmBtn.onclick = () => {
       const values = {};
@@ -611,7 +677,9 @@ function showInfo(title, body) {
   modal.classList.remove("hidden");
   modal.classList.add("show");
   const prev = document.body.style.overflow; document.body.style.overflow = "hidden";
-  const cleanup = () => { modal.classList.remove("show"); modal.classList.add("hidden"); document.body.style.overflow = prev || ""; c.onclick = null; };
+  const cleanup = () => { modal.classList.remove("show"); modal.classList.add("hidden"); document.body.style.overflow = ""; c.onclick = null; if (modal._onKey) { document.removeEventListener("keydown", modal._onKey); modal._onKey = null; } };
+  const onKey = (e) => { if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); c.click(); } };
+  document.addEventListener('keydown', onKey); modal._onKey = onKey;
   c.onclick = cleanup;
 }
 

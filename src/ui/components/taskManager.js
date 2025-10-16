@@ -6,12 +6,12 @@ function addTask(text = "New task", parent = document.getElementById("taskList")
 
   li.innerHTML = `
     <button class="btn-toggle" onclick="toggleChildren(this)" disabled style="color: #FFF0;"><img src="./assets/img/triangle-down-filled.svg" style="opacity: 0;" alt="toggle" width="14" height="14"></button>
-    <button onclick="removeTask(this)"><img src="./assets/img/trash.svg" alt="remove" width="14" height="14"></button>
     <input type="checkbox">
     <span contenteditable="true">${text}</span>
-    <button onclick="openModal(this)"><img src="./assets/img/edit.svg" alt="edit" width="14" height="14"></button>
-    <button onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})">+</button>
+    <button class="btn-edit" onclick="openModal(this)"><img src="./assets/img/edit.svg" alt="edit" width="14" height="14"></button>
+    <button class="btn-add" onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})"><img src="./assets/img/plus.svg" alt="add" width="14" height="14"></button>
     <div class="task-description hidden"></div>
+    <button class="btn-remove" onclick="removeTask(this)"><img src="./assets/img/trash.svg" alt="remove" width="14" height="14"></button>
     <ul class="subtasks task"></ul>
   `;
 

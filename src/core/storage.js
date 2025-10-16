@@ -86,16 +86,22 @@ function processList() {
 
     li.innerHTML = `
       <button class="btn-toggle" onclick="toggleChildren(this)"><img src="./assets/img/triangle-down-filled.svg" alt="toggle" width="14" height="14"></button>
-      <button onclick="removeTask(this)"><img src="./assets/img/trash.svg" alt="remove" width="14" height="14"></button>
       <input type="checkbox" ${isChecked ? "checked" : ""}>
       <span contenteditable="true">${text}</span>
-      <button onclick="openModal(this)"><img src="./assets/img/edit.svg" alt="edit" width="14" height="14"></button>
-      <button onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})">+</button>
+      <button class="btn-edit" onclick="openModal(this)"><img src="./assets/img/edit.svg" alt="edit" width="14" height="14"></button>
+      <button class="btn-add" onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})"><img src="./assets/img/plus.svg" alt="add" width="14" height="14"></button>
       <div class="task-description ${description ? "" : "hidden"}">${innerDescription}</div>
+      <button class="btn-remove" onclick="removeTask(this)"><img src="./assets/img/trash.svg" alt="remove" width="14" height="14"></button>
       <ul class="subtasks task"></ul>
     `;
 
     window.addTaskEventListeners(li);
+    // Respect hide completed on initial render
+    const show = localStorage.getItem('showCompleted') === 'true' || localStorage.getItem('showCompleted') === null;
+    const hide = !show;
+    if (hide && isChecked) {
+      li.style.display = 'none';
+    }
 
     while (stack[stack.length - 1].level >= level) stack.pop();
     stack[stack.length - 1].element.appendChild(li);

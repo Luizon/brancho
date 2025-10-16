@@ -158,18 +158,18 @@ button:active {
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    background: linear-gradient(145deg, #4a9eff, #357abd);
-    border: 1px solid rgba(74, 158, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(145deg, #333, #222);
 }
 
 .btn-toggle:hover {
-    background: linear-gradient(145deg, #5badff, #4a9eff);
-    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+  background: linear-gradient(145deg, #444, #333);
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
 }
 
 .btn-toggle:disabled {
-    background: linear-gradient(145deg, #333, #222);
-    color: rgba(255, 255, 255, 0.0);
+    background: #00000000;
+    color: #00000000;
     cursor: not-allowed;
     border-color: rgba(255, 255, 255, 0.1);
 }
@@ -180,51 +180,51 @@ button:active {
 }
 
 /* Remove task button */
-li button:nth-child(2) {
+li button.btn-remove {
     width: 30px;
     height: 30px;
     border-radius: 50%;
     padding: 0;
-    background: linear-gradient(145deg, #ff4757, #d63031);
+    background: linear-gradient(145deg, #ff4757, #e13a2e);
     border: 1px solid rgba(255, 71, 87, 0.3);
     font-size: 14px;
 }
 
-li button:nth-child(2):hover {
-    background: linear-gradient(145deg, #ff6b7a, #ff4757);
+li button.btn-remove:hover {
+    background: linear-gradient(145deg, #f38994, #e13a2e);
     box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
 }
 
 /* Description button */
-li button:nth-child(5) {
+li button.btn-edit {
     width: 30px;
     height: 30px;
     border-radius: 50%;
     padding: 0;
-    background: linear-gradient(145deg, #ffa726, #f57c00);
+    background: linear-gradient(145deg, #8badbf, #607D8B);
     border: 1px solid rgba(255, 167, 38, 0.3);
     font-size: 14px;
 }
 
-li button:nth-child(5):hover {
-    background: linear-gradient(145deg, #ffb74d, #ffa726);
+li button.btn-edit:hover {
+    background: linear-gradient(145deg, #b5d3e3, #607D8B);
     box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
 }
 
 /* Add subtask button */
-li button:nth-child(6) {
+li button.btn-add {
     width: 30px;
     height: 30px;
     border-radius: 50%;
     padding: 0;
-    background: linear-gradient(145deg, #26c281, #00b894);
+    background: linear-gradient(145deg, #26c281, #4CAF50);
     border: 1px solid rgba(38, 194, 129, 0.3);
     font-size: 16px;
     font-weight: bold;
 }
 
-li button:nth-child(6):hover {
-    background: linear-gradient(145deg, #55efc4, #26c281);
+li button.btn-add:hover {
+    background: linear-gradient(145deg, #55efc4, #4CAF50);
     box-shadow: 0 4px 12px rgba(38, 194, 129, 0.3);
 }
 
@@ -663,6 +663,11 @@ ul {
   text-align: left; 
 }
 
+/* Subtle muted text state for inactive toggles (readable but hints low emphasis) */
+.muted-text {
+  color: rgba(255, 255, 255, 0.75);
+}
+
 .fab-menu button.danger {
   color: #ff4757;
 }
@@ -914,6 +919,13 @@ li.main-task span[contenteditable], li.subtask span[contenteditable] {
   font-size: 16px;
   line-height: 1.4;
   color: inherit;
+  display: inline-block; /* allow width constraints */
+  min-width: 120px; /* prevent collapsing when deeply indented */
+  box-sizing: border-box;
+  max-width: calc(100% - 200px); /* keep within line and wrap before stretching parent */
+  white-space: normal; /* allow wrapping */
+  overflow-wrap: anywhere; /* break long words/URLs */
+  word-break: break-word;
 }
 
 li.main-task span[contenteditable]:focus, li.subtask span[contenteditable]:focus {
@@ -935,6 +947,9 @@ li.main-task span[contenteditable]:focus, li.subtask span[contenteditable]:focus
   overflow-wrap: break-word;
   position: relative;
   z-index: 3;
+  white-space: pre-wrap; /* preserve newlines, wrap long lines */
+  word-break: break-word;
+  overflow: hidden; /* avoid stretching ancestors */
 }
 
 .task-description a {

@@ -61,11 +61,8 @@ function processLists(text) {
         inListMode = false;
         currentListHtml = '';
       }
-      
-      // Add non-list content
-      if (line.trim() !== '' || result.length === 0) {
-        result.push(line);
-      }
+
+      result.push(line);
     }
   }
   
