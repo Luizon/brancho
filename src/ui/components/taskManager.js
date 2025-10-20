@@ -10,8 +10,8 @@ function addTask(text = "New task", parent = document.getElementById("taskList")
     <span contenteditable="true">${text}</span>
     <button class="btn-edit" onclick="openModal(this)"><img src="./assets/img/edit.svg" alt="edit" width="14" height="14"></button>
     <button class="btn-add" onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})"><img src="./assets/img/plus.svg" alt="add" width="14" height="14"></button>
-    <div class="task-description hidden"></div>
     <button class="btn-remove" onclick="removeTask(this)"><img src="./assets/img/trash.svg" alt="remove" width="14" height="14"></button>
+    <div class="task-description hidden"></div>
     <ul class="subtasks task"></ul>
   `;
 
