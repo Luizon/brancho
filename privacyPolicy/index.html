@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy • Brancho</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="icon" href="../favicon.svg" type="image/svg">
+</head>
+<body>
+  <header class="appbar">
+    <div class="appbar-left">
+      <div class="brand">Brancho</div>
+      <div class="tagline">Your hierarchical task manager</div>
+    </div>
+    <div class="appbar-right"></div>
+  </header>
+
+  <div class="app-container" style="max-width: 900px; margin: 30px auto;">
+    <h1 class="main-title" style="font-size: 2rem; margin-bottom: 10px;">Privacy Policy</h1>
+    <div class="main-subtitle" style="margin-bottom: 24px;">We respect your privacy and your data.</div>
+
+    <div class="task-description" style="opacity:1; animation:none;">
+      <p>Brancho is designed to be a simple place to write and organize your tasks. We do not process, profile, or monetize your information. We only store your data so that you can access it across devices whenever you need it.</p>
+
+      <h2 style="margin-top:16px; font-size:18px;">Information We Store</h2>
+      <ul>
+        <li><strong>Account identifiers</strong>: name and email. These are used solely to identify your account. We do not use them for messaging or marketing.</li>
+        <li><strong>Task data</strong>: the tasks you create (including descriptions and structure) so you can access them from your devices.</li>
+        <li><strong>Authentication</strong>: tokens strictly used to keep you signed in.</li>
+      </ul>
+
+      <h2 style="margin-top:16px; font-size:18px;">How We Use Your Data</h2>
+      <ul>
+        <li>We store your data <strong>only</strong> to provide the core functionality of the app: viewing and syncing your tasks.</li>
+        <li>We do <strong>not</strong> process your data for analytics, advertising, recommendations, or any other secondary purpose.</li>
+        <li>We do <strong>not</strong> send emails (no newsletters, no marketing).</li>
+      </ul>
+
+      <h2 style="margin-top:16px; font-size:18px;">Sharing and Selling</h2>
+      <p>We do not sell, rent, or share your personal data or task data with third parties.</p>
+
+      <h2 style="margin-top:16px; font-size:18px;">Data Retention and Control</h2>
+      <ul>
+        <li>Your data is retained so that you can access your account and tasks.</li>
+        <li>You can delete your tasks at any time. You can also delete your account, which removes your account identifiers and associated cloud data.</li>
+      </ul>
+
+      <h2 style="margin-top:16px; font-size:18px;">Children’s Privacy</h2>
+      <p>Brancho is a general productivity tool and does not target children. If you believe data has been stored in error, please remove it via the in-app delete options.</p>
+
+      <h2 style="margin-top:16px; font-size:18px;">Changes to This Policy</h2>
+      <p>If we make material changes to this policy, we will update this page. Your continued use of the app after changes become effective constitutes acceptance of the revised policy.</p>
+    </div>
+
+    <div style="margin-top:24px; display:flex; gap:10px;">
+      <a href="../" class="modal-btn modal-btn-save">Back to App</a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div>© <span id="currentYear"></span> Brancho</div>
+  </footer>
+
+  <script>
+    (function(){ var el = document.getElementById('currentYear'); if (el) el.textContent = String(new Date().getFullYear()); })();
+  </script>
+</body>
+</html>
+
+

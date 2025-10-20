@@ -435,11 +435,15 @@ function openAuthModal(mode) {
   const nameInput = document.getElementById("auth-name");
   const emailInput = document.getElementById("auth-email");
   const passInput = document.getElementById("auth-password");
+  const privacyLabel = document.getElementById("privacy-acceptance");
+  const privacyCheckbox = document.getElementById("privacy-checkbox");
   const primaryBtn = document.getElementById("authModalPrimary");
   const closeBtn = document.getElementById("authModalClose");
   if (!modal) return;
   title.textContent = mode === "register" ? "Register" : "Login";
   nameInput.classList.toggle("hidden", mode !== "register");
+  privacyLabel.classList.toggle("hidden", mode !== "register");
+  if (mode !== "register" && privacyCheckbox) privacyCheckbox.checked = false;
   // Ensure default interactive state when opening
   if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
   if (closeBtn) closeBtn.disabled = false;
@@ -479,10 +483,24 @@ function openAuthModal(mode) {
     if (nameInput) nameInput.value = "";
     if (emailInput) emailInput.value = "";
     if (passInput) passInput.value = "";
+    if (privacyCheckbox) privacyCheckbox.checked = false;
   };
   // Do NOT auto-close on primary click; keep modal open and show loading state until flow completes
   primaryBtn.onclick = () => { mode === "register" ? handleRegister() : handleLogin(); };
   closeBtn.onclick = cleanup;
+
+  // Enforce privacy acceptance in Register mode
+  const syncRegisterButtonState = () => {
+    if (mode === 'register') {
+      const accepted = !!(privacyCheckbox && privacyCheckbox.checked);
+      primaryBtn.disabled = !accepted;
+      primaryBtn.textContent = accepted ? 'Continue' : 'Accept Privacy Policy to continue';
+    }
+  };
+  if (privacyCheckbox) {
+    privacyCheckbox.onchange = syncRegisterButtonState;
+  }
+  syncRegisterButtonState();
 }
 
 function openUpdateNameModal() {
