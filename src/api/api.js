@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://treed-todo-list-api.onrender.com";
+const API_BASE_URL = "https://brancho-api.luizon.com";
 
 function getAuthToken() {
   return localStorage.getItem("authToken") || "";
