@@ -56,11 +56,14 @@ html, body { height: 100%; }
   #greeting, #sync-status, #sync-btn { display: none; }
   /* Show mobile equivalents in the dropdown */
   .menu-appbar-mobile { display: flex; }
+  li.subtask, .task { margin-left: 0; }
 }
 
 @media (min-width: 761px) {
   /* Hide mobile equivalents on larger screens */
   #greeting-mobile, #sync-status-mobile, #sync-btn-mobile, .menu-sep { display: none; }
+  .task { margin-left: 10px; }
+  li.subtask { margin-left: 20px; }
 }
 
 /* Autosave toggle */
@@ -331,7 +334,6 @@ input[type="checkbox"]:checked::after {
     font-weight: bold;
 }
 
-.task { margin-left: 10px; }
 .hidden { display: none; }
 .btn-toggle {
   position: relative;
@@ -860,7 +862,8 @@ li.main-task, li.subtask {
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
   border-radius: 8px;
-  margin: 4px 0;
+  margin-top: 4px;
+  margin-bottom: 4px;
   padding: 6px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 
@@ -881,7 +884,6 @@ li.main-task {
 
 li.subtask {
   background: linear-gradient(145deg, #252525, #151515);
-  margin: 3px 0 3px 20px;
 }
 
 li.main-task:hover, li.subtask:hover {
@@ -926,6 +928,52 @@ li.main-task span[contenteditable], li.subtask span[contenteditable] {
   white-space: normal; /* allow wrapping */
   overflow-wrap: anywhere; /* break long words/URLs */
   word-break: break-word;
+}
+
+/* Responsive layout for tasks: place title below action buttons on narrow screens */
+@media (max-width: 760px) {
+  /* Use grid so buttons stay on first row and title spans full width below */
+  li.main-task, li.subtask {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto auto;
+    grid-template-areas:
+      "toggle check . edit add remove"
+      "title  title title title title title";
+    column-gap: 6px;
+    row-gap: 4px;
+    align-items: center;
+  }
+
+  li.main-task .btn-toggle, li.subtask .btn-toggle { grid-area: toggle; }
+  li.main-task input[type="checkbox"], li.subtask input[type="checkbox"] { grid-area: check; }
+  li.main-task .btn-edit, li.subtask .btn-edit { grid-area: edit; }
+  li.main-task .btn-add, li.subtask .btn-add { grid-area: add; }
+  li.main-task .btn-remove, li.subtask .btn-remove { grid-area: remove; }
+
+  /* Make the editable title full width on its own row */
+  li.main-task span[contenteditable], li.subtask span[contenteditable] {
+    grid-area: title;
+    max-width: 100%;
+    width: 100%;
+    display: block;
+  }
+
+  /* Ensure description and subtasks take full width following the header grid */
+  li.main-task .task-description, li.subtask .task-description,
+  li.main-task .subtasks, li.subtask .subtasks {
+    grid-column: 1 / -1;
+  }
+
+  li.main-task span[contenteditable], li.subtask span[contenteditable] {
+    border: 1px solid rgba(74, 158, 255, 0.35);
+    background: rgba(74, 158, 255, 0.06);
+    border-radius: 6px;
+    cursor: text;
+  }
+
+  li.main-task span[contenteditable]:focus, li.subtask span[contenteditable]:focus {
+    border-color: #4a9eff;
+  }
 }
 
 li.main-task span[contenteditable]:focus, li.subtask span[contenteditable]:focus {
