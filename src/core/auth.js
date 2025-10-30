@@ -443,6 +443,7 @@ function openAuthModal(mode) {
   title.textContent = mode === "register" ? "Register" : "Login";
   nameInput.classList.toggle("hidden", mode !== "register");
   privacyLabel.classList.toggle("hidden", mode !== "register");
+  if (privacyLabel) privacyLabel.style.display = mode === 'register' ? 'flex' : 'none';
   if (mode !== "register" && privacyCheckbox) privacyCheckbox.checked = false;
   // Ensure default interactive state when opening
   if (primaryBtn) { primaryBtn.disabled = false; primaryBtn.textContent = "Continue"; }
@@ -484,6 +485,7 @@ function openAuthModal(mode) {
     if (emailInput) emailInput.value = "";
     if (passInput) passInput.value = "";
     if (privacyCheckbox) privacyCheckbox.checked = false;
+    if (privacyLabel) privacyLabel.style.display = 'none';
   };
   // Do NOT auto-close on primary click; keep modal open and show loading state until flow completes
   primaryBtn.onclick = () => { mode === "register" ? handleRegister() : handleLogin(); };
