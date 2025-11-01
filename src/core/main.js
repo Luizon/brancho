@@ -24,6 +24,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Remove file save/load buttons inside Android/iOS WebViews where they don't work
+  try {
+    const ua = navigator.userAgent || "";
+    const isWebView = /(\bwv\b|WebView)/i.test(ua);
+    if (isWebView) {
+      const saveBtn = document.getElementById("menuSaveFile");
+      if (saveBtn) saveBtn.remove();
+      const loadBtn = document.getElementById("menuLoadFile");
+      if (loadBtn) loadBtn.remove();
+    }
+  } catch (_) { /* noop */ }
+
   const fabButton = document.getElementById("fabButton");
   const fabMenuPanel = document.getElementById("fabMenuPanel");
   const fileLoader = document.getElementById("fileLoader");
