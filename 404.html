@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>404 • Brancho</title>
+  <meta name="description" content="Page not found">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="icon" href="./favicon.svg" type="image/svg">
+</head>
+<body>
+  <header class="appbar">
+    <div class="appbar-left">
+      <div class="brand">Brancho</div>
+      <div class="tagline">Your hierarchical task manager</div>
+    </div>
+  </header>
+
+  <div class="app-container" style="display:flex; align-items:center; justify-content:center; min-height:50vh;">
+    <div style="text-align:center; max-width:640px;">
+      <div class="main-header" style="margin-bottom:16px;">
+        <h1 class="main-title" style="margin:0; font-size:6rem;">404</h1>
+      </div>
+      <p style="color:rgba(255,255,255,0.85); font-size:1.1rem; margin:0 0 32px 0;">
+        The page you're looking for was not found.
+      </p>
+      <p style="color:rgba(255,255,255,0.7); margin:0 0 24px 0;">
+        It may have been moved or deleted.
+        <br />
+        You can go back to the home page to continue.
+      </p>
+      <a href="./" style="text-decoration:none;">
+        <button style="min-width:160px;">
+          Go to Home
+        </button>
+      </a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div>© <span id="currentYear"></span> Brancho</div>
+  </footer>
+
+  <script>
+    (function () {
+      var el = document.getElementById('currentYear');
+      if (el) el.textContent = String(new Date().getFullYear());
+    })();
+  </script>
+</body>
+</html>
+
+
